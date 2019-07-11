@@ -49,8 +49,10 @@ namespace WizardAdventure.Spells
         {
             // Instantiate chilled particle effect prefab and set it
             // as a child of the target.
+
+            Vector3 chilledEffetPos = this.target.GetCenterPoint<SpriteRenderer>();
             this.chilledParticleEffect = Instantiate(chilledParticleEffectPrefab,
-                this.target.transform.position, Quaternion.identity);
+                chilledEffetPos, Quaternion.identity);
             this.chilledParticleEffect.transform.parent = this.target.transform;
 
             // Apply chilled debuff effects to target.

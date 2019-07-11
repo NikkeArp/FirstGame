@@ -58,19 +58,183 @@ public abstract class Unit : MonoBehaviour, IMoveable
     {
         
     }
-
 #endregion
-#region [Protected Methods]
+
+#region [Public Methods]
 
     /// <summary>
-    /// Sets boolean values for unit's animator for "FaceRigth" and "Idle"
+    /// Returns the center point of the game object.
+    /// Type params should be either SpriteRenderer or
+    /// Collider2D.
     /// </summary>
-    protected virtual void UpdateAnimation()
+    /// <typeparam name="T">SpriteRenderer or Collider2D</typeparam>
+    /// <returns>Center point of either SpriteRenderer or Collider2D. If
+    /// Type param doesnt match, return empty vector.</returns>
+    public Vector3 GetCenterPoint<T>()
     {
-        this.UnitAnimator.SetBool("FaceRigth", this.FaceRigth);
-        this.UnitAnimator.SetBool("Idle", this.Idle);
+        Vector3 centerPoint;
+        if (typeof(T) == typeof(SpriteRenderer))
+        {
+            // Unit's renderer's center point vector.
+            centerPoint = this.Renderer.bounds.center;
+        }
+        else if (typeof(T) == typeof(Collider2D))
+        {
+            // Unit's collider's center point vector.
+            centerPoint = this.UnitCollider.bounds.center;
+        }
+        else
+        {
+            // Type parameter doesn't match.
+            centerPoint = Vector3.zero;
+        }
+        return centerPoint;
     }
 
+    /// <summary>
+    /// Returns the size of the game object.
+    /// Type params should be either SpriteRenderer or
+    /// Collider2D.
+    /// </summary>
+    /// <typeparam name="T">SpriteRenderer or Collider2D</typeparam>
+    /// <returns>Size of either SpriteRenderer or Collider2D. If
+    /// Type param doesnt match, return empty vector.</returns>
+    public Vector3 GetSize<T>()
+    {
+        Vector3 size;
+        if (typeof(T) == typeof(SpriteRenderer))
+        {
+            // Unit's renderer's size vector.
+            size = this.Renderer.bounds.size;
+        }
+        else if (typeof(T) == typeof(Collider2D))
+        {
+            // Unit's collider's size vector.
+            size = this.UnitCollider.bounds.size;
+        }
+        else 
+        {
+            // Type parameter doesn't match.
+            size = Vector3.zero;
+        }
+        return size;
+    }
+
+    /// <summary>
+    /// Get the Bounds struct of either the units SpriteRenderer
+    /// or Collider2D object. Type param should always be either
+    /// SpriteRenderer or Collider2D Type.
+    /// </summary>
+    /// <typeparam name="T">SpriteRenderer or Collider2D</typeparam>
+    /// <returns>Bounds struct of either SpriteRenderer or Collider2D. If
+    /// Type param doesnt match, return new Bounds object</returns>
+    public Bounds GetBounds<T>()
+    {
+        Bounds result;
+        if (typeof(T) == typeof(SpriteRenderer))
+        {
+            // Unit's renderer's Bounds.
+            result = this.Renderer.bounds;
+        }
+        else if (typeof(T) == typeof(Collider2D))
+        {
+            // unit's collider's Bounds.
+            result = this.UnitCollider.bounds;
+        }
+        else 
+        {
+            // Type parameter doesn't match.
+            result = new Bounds();
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Returns the depth of the game object.
+    /// Type params should be either SpriteRenderer or
+    /// Collider2D.
+    /// </summary>
+    /// <typeparam name="T">SpriteRenderer or Collider2D</typeparam>
+    /// <returns>depth of either SpriteRenderer or Collider2D. If
+    /// Type param doesnt match, returns -99.9</returns>
+    public float GetDepth<T>()
+    {
+        float depth;
+        if (typeof(T) == typeof(SpriteRenderer))
+        {
+            // Unit's renderer's depth.
+            depth = this.Renderer.bounds.size.z;
+        }
+        else if (typeof(T) == typeof(Collider2D))
+        {
+            // Unit's collider's depth.
+            depth = this.UnitCollider.bounds.size.z;
+        }
+        else 
+        {
+            // type parameter doesn't match.
+            depth = -99.9f;
+        }
+        return depth;
+    }
+
+    /// <summary>
+    /// Returns the width of the game object.
+    /// Type params should be either SpriteRenderer or
+    /// Collider2D.
+    /// </summary>
+    /// <typeparam name="T">SpriteRenderer or Collider2D</typeparam>
+    /// <returns>Width of either SpriteRenderer or Collider2D. If
+    /// Type param doesnt match, returns -99.9</returns>
+    public float GetWidth<T>()
+    {
+        float width;
+        if (typeof(T) == typeof(SpriteRenderer))
+        {
+            // Unit's renderer's width.
+            width = this.Renderer.bounds.size.x;
+        }
+        else if (typeof(T) == typeof(Collider2D))
+        {
+            // Unit's collider's width.
+            width = this.UnitCollider.bounds.size.x;
+        }
+        else 
+        {
+            // Type parameter doesn't match.
+            width = -99.9f;
+        }
+        return width;
+    }
+
+    /// <summary>
+    /// Returns the Height of the game object.
+    /// Type params should be either SpriteRenderer or
+    /// Collider2D.
+    /// </summary>
+    /// <typeparam name="T">SpriteRenderer or Collider2D</typeparam>
+    /// <returns>Height of either SpriteRenderer or Collider2D. If
+    /// Type param doesnt match, returns -99.9</returns>
+    public float GetHeight<T>()
+    {
+        float height;
+        if (typeof(T) == typeof(SpriteRenderer))
+        {
+            // Units renderer's height.
+            height = this.Renderer.bounds.size.y;
+        }
+        else if (typeof(T) == typeof(Collider2D))
+        {
+            // Units collider's height.
+            height = this.UnitCollider.bounds.size.y;
+        }
+        else 
+        {
+            // Type parmameter doesnt match.
+            height = -99.9f;
+        }
+        return height;
+    }
 
     /// <summary>
     /// 
@@ -181,7 +345,19 @@ public abstract class Unit : MonoBehaviour, IMoveable
         this.Idle = true;
         this.Rigidbody.velocity = new Vector2(jumpPowerSide, this.jumpPowerUp);
     }
+    
+#endregion
 
+#region [Protected Methods]
+
+    /// <summary>
+    /// Sets boolean values for unit's animator for "FaceRigth" and "Idle"
+    /// </summary>
+    protected virtual void UpdateAnimation()
+    {
+        this.UnitAnimator.SetBool("FaceRigth", this.FaceRigth);
+        this.UnitAnimator.SetBool("Idle", this.Idle);
+    }
 
     /// <summary>
     /// 
