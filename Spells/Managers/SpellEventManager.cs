@@ -12,8 +12,10 @@ namespace WizardAdventure.Spells
     #region [Properties]
         public static SpellEventManager Instance { get; private set; } = null;
         public bool BlinkOnCooldown { get; private set; } = false;
+        public bool FireballOnCooldown { get; private set; } = false;
         public bool FrostBlastOnCooldown { get; private set; } = false;
         public bool GlobalCooldown { get; private set; } = false;
+        
     #endregion
         
     #region [UnityAPI]
@@ -136,14 +138,17 @@ namespace WizardAdventure.Spells
         public void SetCooldown<T>()
         {
             Type spellType = typeof(T);
-            // Blink spell teleports caster forward
+
+             if (spellType == typeof(Fireball))
+            {
+                this.StartCoroutine(setCD<Fireball>());
+                return;
+            }
             if (spellType == typeof(Blink))
             {
                 this.StartCoroutine(setCD<Blink>());
                 return;
             }
-            // Frostblast shoots iceshard forwards, that
-            // slows enemies that got hit.
             if (spellType == typeof(Frostblast))
             {
                 this.StartCoroutine(setCD<Frostblast>());
@@ -198,6 +203,15 @@ namespace WizardAdventure.Spells
         private IEnumerator setCD<T>()
         {
             Type spellType = typeof(T);
+            if (spellType == typeof(Fireball))
+            {
+                this.FireballOnCooldown = true;
+                PropertyInfo propInfo = spellType.GetProperty("BaseCooldown",
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                object value = propInfo.GetValue(null);
+                yield return new WaitForSeconds((float)value);
+                this.FireballOnCooldown = false;
+            }
             if (spellType == typeof(Blink))
             {
                 this.BlinkOnCooldown = true;

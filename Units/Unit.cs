@@ -27,7 +27,7 @@ public abstract class Unit : MonoBehaviour, IMoveable
     public bool Idle      { get; protected set; } = true;
 
     protected Rigidbody2D    Rigidbody    { get; private set; }
-    protected Animator       UnitAnimator {  get; private set; }
+    protected Animator       UnitAnimator { get; private set; }
     protected Collider2D     UnitCollider { get; private set; }
     public MovementState     MoveState    { get; set; } = MovementState.NULL;
     protected SpriteRenderer Renderer     { get; private set; }
@@ -61,6 +61,12 @@ public abstract class Unit : MonoBehaviour, IMoveable
 #endregion
 
 #region [Public Methods]
+
+    /// <summary>
+    /// Sets units casting animation trigger
+    /// </summary>
+    public virtual void SetCastAnimation()
+    {}
 
     /// <summary>
     /// Returns the center point of the game object.
@@ -349,6 +355,8 @@ public abstract class Unit : MonoBehaviour, IMoveable
 #endregion
 
 #region [Protected Methods]
+
+    
 
     /// <summary>
     /// Sets boolean values for unit's animator for "FaceRigth" and "Idle"

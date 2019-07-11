@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using System.Collections;
 using UnityEngine;
 using WizardAdventure.Structures;
-using WizardAdventure.Projectiles;
 using WizardAdventure.Effects;
 
 /// <summary>
@@ -45,12 +44,6 @@ public class Slime : Enemy, ILightUp
                 this.Renderer.color = newColor;
                 StartCoroutine(Grow(NEW_GROWTH_SCALE, GROWTH_INTERVAL));
             }
-        }
-        // Slime got hitted by projectile.
-        Projectile projectile;
-        if (other.gameObject.TryGetComponent<Projectile>(out projectile))
-        {
-            OnGotHit(projectile);
         }
     }
 
@@ -175,7 +168,7 @@ public class Slime : Enemy, ILightUp
         this.GlowLigth.Intesify(0.4f, 0);
     }
 
-    /// <summary>
+    /* /// <summary>
     /// GotHit event handler.
     /// </summary>
     /// <param name="projectile">Projectile that hitted object</param>
@@ -213,8 +206,8 @@ public class Slime : Enemy, ILightUp
             {
                 hittedAnimation.gameObject.SetActive(false);
             }
-        }
-    }
+        } 
+    }*/
 #endregion
 
 }

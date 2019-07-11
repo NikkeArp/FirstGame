@@ -11,6 +11,11 @@ namespace WizardAdventure.Spells
         protected Vector2 LaunchDirection = Vector2.zero;
         protected Rigidbody2D Rigidbody = null;
         protected bool faceRight = false;
+
+        public Tuple<float, float> SpawnOffset { get; protected set; }
+
+        public float MaxSpeed { get; protected set; }
+        public float StartSpeed { get; protected set; }
     #endregion
 
     #region [Unity API]
@@ -40,6 +45,35 @@ namespace WizardAdventure.Spells
     #endregion
 
     #region [Protected Mehods]
+
+
+        /// <summary>
+        /// Sets caster information for frostblast object and
+        /// then launches it in facing direction.
+        /// </summary>
+        /// <param name="caster">Unit that casted the spell</param>
+        /// <param name="faceRight">Direction caster is facing</param>
+        public virtual void Cast(Unit caster, bool faceRight)
+        {
+            this.UpdateSpellInfo(caster, faceRight, this.SpawnOffset);
+            this.Launch(this.LaunchDirection, this.StartSpeed);
+        }
+
+
+        /// <summary>
+        /// Adds frostblast projectile's velocity gradually,
+        /// until it has reached max speed.
+        /// </summary>
+        protected virtual void SpeedUp()
+        {
+            // Increases frostblast-projectiles velocity over time.
+            if (Mathf.Abs(this.Rigidbody.velocity.x) < this.MaxSpeed)
+            {
+                Vector2 newSpeed = this.Rigidbody.velocity;
+                newSpeed.x += this.faceRight ? 0.2f : -0.2f;
+                this.Rigidbody.velocity = newSpeed;
+            }
+        }
 
         /// <summary>
         /// Called after Spell is added to game. Sets information
@@ -97,5 +131,6 @@ namespace WizardAdventure.Spells
         }
 
     #endregion
+    
     }
 }

@@ -10,9 +10,40 @@ namespace WizardAdventure.Spells
         public Unit Caster { get; set; }
         public GameObject FrostBlastPrefab = null;
         public GameObject BlinkPrefab = null;
+        public GameObject FireballPrefab = null;
     #endregion
 
     #region [Public Methods]
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void AttemptCast()
+        {
+            if (SpellEventManager.Instance.GlobalCooldown)
+            {
+                return;
+            }
+            else
+            {
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    this.Caster.SetCastAnimation();
+                    if(this.CastSpell<Blink>(Caster.FaceRigth))
+                    {
+                        SpellEventManager.Instance.SetGlobalCooldown();
+                    }
+                }
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    this.Caster.SetCastAnimation();
+                    if(this.CastSpell<Frostblast>(Caster.FaceRigth))
+                    {
+                        SpellEventManager.Instance.SetGlobalCooldown();
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Tries to cast specified spell.
@@ -21,6 +52,16 @@ namespace WizardAdventure.Spells
         public bool CastSpell<T>(bool faceRight)
         {
             Type spellType = typeof(T);
+
+            if (spellType == typeof(Fireball))
+            {
+                if (SpellEventManager.Instance.FireballOnCooldown) return false;
+                GameObject fireballGameObject = Instantiate(FireballPrefab, this.Caster.transform.position, Quaternion.identity);
+                Fireball fireball = fireballGameObject.GetComponent<Fireball>();
+                fireball.Cast(this.Caster, faceRight);
+                SpellEventManager.Instance.SetCooldown<Fireball>();
+                return true;
+            }
             if (spellType == typeof(Blink))
             {
                 if (SpellEventManager.Instance.BlinkOnCooldown) return false;

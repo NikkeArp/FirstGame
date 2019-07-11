@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Threading.Tasks;
 using System;
-using WizardAdventure.Projectiles;
 using WizardAdventure.Spells;
 
 /// <summary>
@@ -10,17 +9,12 @@ using WizardAdventure.Spells;
 public class Player : Unit
 {
 #region [Properties]
-    public GameObject FireballRigthGameObj;
-    public GameObject FireballLeftGameObj;
-
-    public GameObject Blink;
-
     public SpellBook spellBook;
-
     private bool jumpDownTime = false;
-    public float y_PositionBeforeJump;
-    public bool backAtJumpStartPosition;
+    [HideInInspector] public float y_PositionBeforeJump;
+    [HideInInspector] public bool backAtJumpStartPosition;
     private const int JUMP_DOWNTIME = 100;
+
 #endregion
 #region [UnityAPI]
 
@@ -47,27 +41,9 @@ public class Player : Unit
     /// </summary>
     protected override void Update()
     {
-        if (SpellEventManager.Instance.GlobalCooldown)
+        if (Input.anyKeyDown)
         {
-            return;
-        }
-            
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            this.UnitAnimator.SetTrigger("Shoot");
-            if (this.spellBook.CastSpell<Frostblast>(this.FaceRigth))
-            {
-                SpellEventManager.Instance.SetGlobalCooldown();
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            this.UnitAnimator.SetTrigger("Shoot");
-            if(this.spellBook.CastSpell<Blink>(this.FaceRigth))
-            {
-                SpellEventManager.Instance.SetGlobalCooldown();
-            }
+            this.spellBook.AttemptCast();
         }
     }
 
@@ -85,13 +61,10 @@ public class Player : Unit
         if (PlayerMoved(out horizontal))
         {
             this.MovePLayer(horizontal);
-            if ((Input.GetKeyDown(KeyCode.Mouse0)))
-                this.Shoot();
             this.Idle = false;
         }
         else if (Input.GetKeyDown(KeyCode.Mouse0))
         {   
-            this.Shoot();
             this.Idle = false;
         } 
         else
@@ -141,39 +114,16 @@ public class Player : Unit
     }
 
 
-    /// <summary>
-    /// Sets animator trigger shoot active.
-    /// </summary>
-    private async void Shoot()
-    {
-        if (GameController.Instance.PlayerCanShoot) 
-        {
-            this.UnitAnimator.SetTrigger("Shoot");
-            GameController.Instance.PlayerShoot();
-            await Task.Delay((TimeSpan.FromMilliseconds(Fireball.CAST_TIME)));
-
-            Vector3 projectilePos = this.transform.position;
-            projectilePos.y -= 0.10f;
-            float x_Axis;
-            GameObject fireball;
-            if (this.FaceRigth)
-            {
-                projectilePos.x += 0.35f;
-                x_Axis = 1.0f;
-                fireball = Instantiate(FireballRigthGameObj, projectilePos + Vector3.up * 0.5f, Quaternion.identity);
-            }
-            else
-            {
-                projectilePos.x -= 0.35f;
-                x_Axis = -1.0f;
-                fireball = Instantiate(FireballLeftGameObj, projectilePos + Vector3.up * 0.5f, Quaternion.identity);
-            }
-            Fireball fb = fireball.GetComponent<Fireball>();
-            fb?.Launch(new Vector2(x_Axis, 0.0f));
-        }
-    }
 #endregion
 #region [Public Methods]
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public override void SetCastAnimation()
+    {
+        this.UnitAnimator.SetTrigger("Shoot");
+    }
 
     /// <summary>
     /// Override for Unit.Jump(). Stores y-Position before the jump.
@@ -199,10 +149,13 @@ public class Player : Unit
     protected override void InitializeUnit()
     {
         this.spellBook = this.GetComponentInChildren<SpellBook>();
-        spellBook.Caster = this;
+        this.spellBook.Caster = this;
+
         this.IsFrozen = false;
+
         this.y_PositionBeforeJump = this.transform.position.y;
         this.backAtJumpStartPosition = true;
+        
         this.MoveSpeed = 3.2f;
         this.jumpPowerUp = 10.0f;
         this.JumpPowerSide = 3.0f;

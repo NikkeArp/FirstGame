@@ -10,8 +10,6 @@ namespace WizardAdventure.Spells
     {
     #region [Properties]
         new public static float BaseCooldown { get; private set; }
-        private const float MAX_SPEED = 15f;
-        private const float START_SPEED = 2f;
         private const float SLOW_EFFECT = 0.4f;
         private const float SLOW_DURATION = 2.0f;
         private GlowEffect glowEffect = null;
@@ -26,13 +24,7 @@ namespace WizardAdventure.Spells
         /// </summary>
         protected override void Update()
         {
-            // Increases frostblast-projectiles velocity over time.
-            if (Mathf.Abs(this.Rigidbody.velocity.x) < MAX_SPEED)
-            {
-                Vector2 newSpeed = this.Rigidbody.velocity;
-                newSpeed.x += this.faceRight ? 0.2f : -0.2f;
-                this.Rigidbody.velocity = newSpeed;
-            }
+            this.SpeedUp();
             base.Update();
         }
 
@@ -64,17 +56,6 @@ namespace WizardAdventure.Spells
  
     #endregion
 
-        /// <summary>
-        /// Sets caster information for frostblast object and
-        /// then launches it in facing direction.
-        /// </summary>
-        /// <param name="caster"></param>
-        /// <param name="faceRight"></param>
-        public void Cast(Unit caster, bool faceRight)
-        {
-            this.UpdateSpellInfo(caster, faceRight, new Tuple<float, float>(1.0f, 0.5f));
-            this.Launch(this.LaunchDirection, START_SPEED);
-        }
 
         /// <summary>
         /// Slows hitted enemy. Debuff is lifted automatically
@@ -145,6 +126,9 @@ namespace WizardAdventure.Spells
         protected override void InitializeSpell()
         {
             base.InitializeSpell();
+            this.StartSpeed = 2f;
+            this.SpawnOffset = new Tuple<float, float>(1.0f, 0.5f);
+            this.MaxSpeed = 15f;
             this.glowEffect = GetComponentInChildren<GlowEffect>();
             this.damage = 2;
             this.Cooldown = 2.0f;
