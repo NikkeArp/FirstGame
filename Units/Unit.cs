@@ -32,6 +32,10 @@ public abstract class Unit : MonoBehaviour, IMoveable
     public MovementState     MoveState    { get; set; } = MovementState.NULL;
     protected SpriteRenderer Renderer     { get; private set; }
 
+    public bool colorChanged = false;
+
+    private Color originalColor;
+
 #endregion
 #region [UnityAPI]
 
@@ -86,14 +90,32 @@ public abstract class Unit : MonoBehaviour, IMoveable
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     public Color GetColor()
     {
         return this.Renderer.color;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="color"></param>
     public void ChangeColor(Color color)
     {
+        originalColor = this.Renderer.color;
         this.Renderer.color = color;
+        this.colorChanged = true;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public void ResetColor()
+    {
+        this.Renderer.color = originalColor;
     }
 
     /// <summary>

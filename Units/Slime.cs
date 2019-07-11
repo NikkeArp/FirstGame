@@ -59,6 +59,10 @@ public class Slime : Enemy, ILightUp
     /// </summary>
     protected override void Start()
     {
+        // Changes hitted animation sprite color to match units sprite color
+        // dynamically.
+        SyncColors(); // Coroutine that runs every half second.
+
         // Start the glow effect with random variance added
         GlowLigth.GlowWithVariance(MIN_GLOW_INTENSITY, GLOW_INTERVAL, 0.02f);
         this.StartPatrolling(5.0f, 2.0f, true);
@@ -75,27 +79,9 @@ public class Slime : Enemy, ILightUp
         base.Update();
     }
 
-
 #endregion
 
 #region [Protected Methods]
-
-    /// <summary>
-    /// Jumps up based on objects jump power properties.
-    /// </summary>
-    /// <param name="x_Axis_movement">X-Axis velocity at the time of the jump</param>
-    public override void Jump(float x_Axis_movement)
-    {
-        base.Jump(x_Axis_movement);
-        this.UnitAnimator.SetTrigger("Jump");
-    }
-
-
-    public GlowEffect GetEffectController()
-    {
-        return this.GlowLigth;
-    }
-
 
     /// <summary>
     /// Initilizes Ligth-component,
@@ -114,7 +100,58 @@ public class Slime : Enemy, ILightUp
 
 #endregion
 
+#region [Public Methods]
+
+    /// <summary>
+    /// Jumps up based on objects jump power properties.
+    /// </summary>
+    /// <param name="x_Axis_movement">X-Axis velocity at the time of the jump</param>
+    public override void Jump(float x_Axis_movement)
+    {
+        base.Jump(x_Axis_movement);
+        this.UnitAnimator.SetTrigger("Jump");
+    }
+
+    /// <summary>
+    /// Get Slime's glow effect object.
+    /// </summary>
+    /// <returns>Slime's glow effect object</returns>
+    public GlowEffect GetEffectController()
+    {
+        return this.GlowLigth;
+    }
+    
+#endregion
+
 #region [Private Methods]
+
+    /// <summary>
+    /// Synchronizes unit's components colors every
+    /// half second.
+    /// </summary>
+    private void SyncColors()
+    {
+        StartCoroutine(UpdateHittedColor());
+    }
+
+    /// <summary>
+    /// Starts routine that lasts objects whole lifetime.
+    /// Synchronizes units components colors to match.
+    /// Runs every half second.
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator UpdateHittedColor()
+    {
+        while (true) 
+        {
+            if (this.colorChanged)
+            {
+                var hittedObject = this.transform.Find("Hitted");
+                hittedObject.GetComponent<SpriteRenderer>().color = this.Renderer.color;
+            }
+            yield return new WaitForSeconds(0.5f); // Delay
+        }
+    }
 
     /// <summary>
     /// Grows slime gradually to new scale. Growth is linear.
@@ -137,7 +174,6 @@ public class Slime : Enemy, ILightUp
         // Slime size has grown, so let ramp up the ligthing to match it.
         this.GlowLigth.Intesify(0.4f, 0);
     }
-
 
     /// <summary>
     /// GotHit event handler.
@@ -180,4 +216,5 @@ public class Slime : Enemy, ILightUp
         }
     }
 #endregion
+
 }

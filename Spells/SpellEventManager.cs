@@ -18,10 +18,6 @@ namespace WizardAdventure.Spells
         
     #region [UnityAPI]
 
-        private void Update() {
-            Debug.Log("BlinkCD " + this.BlinkOnCooldown);
-        }
-
         /// <summary>
         /// Runs before the first frame.
         /// Ensures only one instance of this class exists
