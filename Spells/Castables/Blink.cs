@@ -7,13 +7,13 @@ namespace WizardAdventure.Spells
 {
     public class Blink : UtilitySpell
     {
-        #region [Properties]
-            new public static float BaseCooldown { get; set; }
-            private Light floorLigth = null;
-            private GlowEffect glowEffect = null;
-            private Light centerLigth = null;
-            private GlowEffect centerGlowEffect = null;
-        #endregion
+    #region [Properties]
+        new public static float BaseCooldown { get; private set; }
+        private Light floorLigth = null;
+        private GlowEffect glowEffect = null;
+        private Light centerLigth = null;
+        private GlowEffect centerGlowEffect = null;
+    #endregion
 
     #region [Unity API]
 
@@ -25,7 +25,7 @@ namespace WizardAdventure.Spells
         /// lowered when cast starts, and brougth back up when blinking is done.
         /// </summary>
         /// <param name="direction">Direction caster is facing</param>
-        public void Cast(Unit caster, bool faceRigth)
+        public override void Cast(Unit caster, bool faceRigth)
         {
             if (SpellEventManager.Instance.BlinkOnCooldown)
             {
@@ -173,8 +173,7 @@ namespace WizardAdventure.Spells
             this.IsOnCooldown = false;
             this.castRange = 5.0f;
             this.isAgressive = false;
-            this.Cooldown = 5.0f;
-            BaseCooldown = this.Cooldown;
+            this.Cooldown = BaseCooldown =  5.0f;
             base.InitializeSpell();
         }
     }

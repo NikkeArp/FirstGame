@@ -221,7 +221,7 @@ namespace WizardAdventure.Effects
         {
             while (this.LightEffect.intensity > targetIntensity)
             {
-                this.LightEffect.intensity -= 1f;
+                this.LightEffect.intensity -= 0.5f;
                 if (this.LightEffect.range > targetRange)
                 {
                     this.LightEffect.range -= 0.5f;

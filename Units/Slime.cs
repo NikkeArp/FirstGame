@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using WizardAdventure.Structures;
 using WizardAdventure.Effects;
@@ -45,6 +43,15 @@ public class Slime : Enemy, ILightUp
                 StartCoroutine(Grow(NEW_GROWTH_SCALE, GROWTH_INTERVAL));
             }
         }
+        // Check if hitted object was damage source
+        else if (other.collider.gameObject.GetComponent<IDamageSource>() != null)
+        {
+            if (this.OnGotHit(other.collider.gameObject.GetComponent<IDamageSource>(), other.contacts[0].point))
+            {
+                Debug.Log("Died");
+                StopAllCoroutines();
+            }
+        }
     }
 
     /// <summary>
@@ -67,14 +74,31 @@ public class Slime : Enemy, ILightUp
     /// </summary>
     protected override void Update()
     {
-        // Movement and behaviour
-        //this.FollowPlayer(1.2f, 10.0f); 
         base.Update();
     }
 
 #endregion
 
 #region [Protected Methods]
+
+    /// <summary>
+    /// Handles slime hitted event. Displays hit animation
+    /// and substracts health. If health is below 0,
+    /// destroys slime game object.
+    /// </summary>
+    /// <param name="damageSrc">Damage source</param>
+    /// <param name="hitLocation">Where slime got hit</param>
+    /// <returns>True if slime dies</returns>
+    protected override bool OnGotHit(IDamageSource damageSrc, Vector2 hitLocation)
+    {
+        if(base.OnGotHit(damageSrc, hitLocation))
+        {
+            this.Die();
+            return true;
+        }
+        StartCoroutine(DisplayHit(hitLocation));
+        return false;
+    }
 
     /// <summary>
     /// Initilizes Ligth-component,
@@ -89,6 +113,16 @@ public class Slime : Enemy, ILightUp
         this.MoveSpeed = BaseMoveSpeed = 4f;
         this.jumpPowerUp = 5f;
         this.JumpPowerSide =  2f;
+    }
+
+    /// <summary>
+    /// Sets death animation and ligth fades.
+    /// </summary>
+    protected override void Die()
+    {
+        this.GlowLigth.gameObject.SetActive(true);
+        this.GlowLigth.StartFade(1.0f, 2.0f);
+        base.Die();
     }
 
 #endregion
@@ -137,7 +171,7 @@ public class Slime : Enemy, ILightUp
     {
         while (true) 
         {
-            if (this.colorChanged)
+            if (this.ColorChanged)
             {
                 var hittedObject = this.transform.Find("Hitted");
                 hittedObject.GetComponent<SpriteRenderer>().color = this.Renderer.color;
@@ -168,46 +202,36 @@ public class Slime : Enemy, ILightUp
         this.GlowLigth.Intesify(0.4f, 0);
     }
 
-    /* /// <summary>
-    /// GotHit event handler.
+    /// <summary>
+    /// Displays slime's hitted animation.
     /// </summary>
-    /// <param name="projectile">Projectile that hitted object</param>
+    /// <param name="hitLocation">Where slime was hitted</param>
     /// <returns></returns>
-    private async void OnGotHit(Projectile projectile)
+    private IEnumerator DisplayHit(Vector2 hitLocation)
     {
-        this.Health -= projectile.damage;
-        {
-            if (this.Health <= 0)
-            {   // Death animation and ligth is fading. Object is destroyed.
-                this.GlowLigth.StartFade(1.0f, 2.0f);
-                this.UnitAnimator.SetTrigger("Death");
-                Destroy (this.gameObject, this.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).length);
-                return;
-            }
-        }
-
         var hittedAnimation = this.transform.Find("Hitted");
         if (hittedAnimation != null)
         {
             var hittedAnimator = hittedAnimation.GetComponent<Animator>();
             hittedAnimation.gameObject.SetActive(true);
-            hittedAnimator.SetBool("RightSide", projectile.transform.position.x < this.transform.position.x ? false : true);
+            hittedAnimator.SetBool("RightSide", hitLocation.x < this.transform.position.x ? false : true);
             hittedAnimator.SetTrigger("Hit");
-            hittedAnimation.transform.position = projectile.transform.position;
+            hittedAnimation.transform.position = hitLocation;
             // Fix rigth side position.
-            if (projectile.transform.position.x > this.transform.position.x)
+            if (hitLocation.x > this.transform.position.x)
             {
                 var animationNewPos = hittedAnimation.position;
                 animationNewPos.x -= 0.3f;
                 hittedAnimation.position = animationNewPos;
             }
-            await Task.Delay(TimeSpan.FromMilliseconds(200));
+            yield return new WaitForSeconds(0.2f);
             if (this.gameObject != null)
             {
                 hittedAnimation.gameObject.SetActive(false);
             }
         } 
-    }*/
+    }
+
 #endregion
 
 }

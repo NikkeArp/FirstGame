@@ -3,7 +3,7 @@ using System;
 
 namespace WizardAdventure.Spells
 {
-    public class ProjectileSpell : DamageSpell
+    public class ProjectileSpell : DamageSpell, ICastable
     {
     #region [Properties]
         new public static float BaseCooldown { get; private set; }
@@ -38,14 +38,13 @@ namespace WizardAdventure.Spells
         {
             if (transform.position.magnitude > this.castRange)
             {
-                Destroy(gameObject);
+                Destroy(this.gameObject);
             }
         }
 
     #endregion
 
     #region [Protected Mehods]
-
 
         /// <summary>
         /// Sets caster information for frostblast object and
@@ -58,7 +57,6 @@ namespace WizardAdventure.Spells
             this.UpdateSpellInfo(caster, faceRight, this.SpawnOffset);
             this.Launch(this.LaunchDirection, this.StartSpeed);
         }
-
 
         /// <summary>
         /// Adds frostblast projectile's velocity gradually,

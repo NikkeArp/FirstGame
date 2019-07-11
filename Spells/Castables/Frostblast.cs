@@ -1,6 +1,5 @@
 using UnityEngine;
 using WizardAdventure.Effects;
-using System.Threading.Tasks;
 using System;
 using System.Collections;
 
@@ -8,6 +7,7 @@ namespace WizardAdventure.Spells
 {
     public class Frostblast : ProjectileSpell
     {
+
     #region [Properties]
         new public static float BaseCooldown { get; private set; }
         private const float SLOW_EFFECT = 0.4f;
@@ -56,6 +56,7 @@ namespace WizardAdventure.Spells
  
     #endregion
 
+    #region [Private Methods]
 
         /// <summary>
         /// Slows hitted enemy. Debuff is lifted automatically
@@ -119,6 +120,10 @@ namespace WizardAdventure.Spells
             tailTwo.GetComponent<GlowEffect>().Glow(0.2f, 0.2f);
         }
 
+    #endregion
+
+    #region [Protected Methods]
+
         /// <summary>
         /// Initializes spell by setting all properties.
         /// This method is invoked in the Awake() method.
@@ -131,9 +136,11 @@ namespace WizardAdventure.Spells
             this.MaxSpeed = 15f;
             this.glowEffect = GetComponentInChildren<GlowEffect>();
             this.damage = 2;
-            this.Cooldown = 2.0f;
-            BaseCooldown = this.Cooldown;
+            this.Cooldown = BaseCooldown =  2.0f;
             this.castRange = 50f;
         }
+
+    #endregion
+
     }
 }

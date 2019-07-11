@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using System.Collections.Generic;
 
 namespace WizardAdventure.Spells
 {
@@ -16,16 +15,18 @@ namespace WizardAdventure.Spells
     #region [Public Methods]
 
         /// <summary>
-        /// 
+        /// Attempts to cast spells
         /// </summary>
         public void AttemptCast()
         {
             if (SpellEventManager.Instance.GlobalCooldown)
             {
+                // Global cooldown is active.
                 return;
             }
             else
             {
+                // Blink
                 if (Input.GetKeyDown(KeyCode.Q))
                 {
                     this.Caster.SetCastAnimation();
@@ -34,6 +35,7 @@ namespace WizardAdventure.Spells
                         SpellEventManager.Instance.SetGlobalCooldown();
                     }
                 }
+                // FrostBlast
                 if (Input.GetKeyDown(KeyCode.R))
                 {
                     this.Caster.SetCastAnimation();
@@ -45,42 +47,66 @@ namespace WizardAdventure.Spells
             }
         }
 
+        
         /// <summary>
-        /// Tries to cast specified spell.
+        /// Casts specified spell if its not
+        /// on cooldown. Returns true if cast is succesful.
         /// </summary>
-        /// <param name="faceRight"></param>
-        public bool CastSpell<T>(bool faceRight)
+        /// <param name="faceRight">Direction caster is facing</param>
+        /// <typeparam name="T">Spell type</typeparam>
+        /// <returns>True if spell is casted</returns>
+        public bool CastSpell<T>(bool faceRight) where T : ICastable
         {
             Type spellType = typeof(T);
-
             if (spellType == typeof(Fireball))
             {
-                if (SpellEventManager.Instance.FireballOnCooldown) return false;
-                GameObject fireballGameObject = Instantiate(FireballPrefab, this.Caster.transform.position, Quaternion.identity);
-                Fireball fireball = fireballGameObject.GetComponent<Fireball>();
-                fireball.Cast(this.Caster, faceRight);
-                SpellEventManager.Instance.SetCooldown<Fireball>();
-                return true;
+                return TryCasting<T>(faceRight, FireballPrefab);
             }
             if (spellType == typeof(Blink))
             {
-                if (SpellEventManager.Instance.BlinkOnCooldown) return false;
-                GameObject blinkGameObject = Instantiate(BlinkPrefab, this.Caster.transform.position, Quaternion.identity);
-                Blink blink = blinkGameObject.GetComponent<Blink>();
-                blink.Cast(this.Caster, faceRight);
-                SpellEventManager.Instance.SetCooldown<Blink>();
-                return true;
+                return TryCasting<T>(faceRight, BlinkPrefab);
             }
             if (spellType == typeof(Frostblast))
             {
-                if (SpellEventManager.Instance.FrostBlastOnCooldown) return false;
-                GameObject frostBlastGameObj = Instantiate(FrostBlastPrefab, this.Caster.transform.position, Quaternion.identity);
-                Frostblast frostBlast = frostBlastGameObj.GetComponent<Frostblast>();
-                frostBlast.Cast(this.Caster, faceRight);
-                SpellEventManager.Instance.SetCooldown<Frostblast>();
-                return true;
+                return TryCasting<T>(faceRight, FrostBlastPrefab);
             }
             return false;
+        }
+
+        /// <summary>
+        /// Checks if spell is on cooldown. If
+        /// not -> casts the spell.
+        /// </summary>
+        /// <param name="faceRight">Direction caster is facing</param>
+        /// <param name="prefab">Spell prefab</param>
+        /// <typeparam name="T">Spell type</typeparam>
+        /// <returns></returns>
+        private bool TryCasting<T>(bool faceRight, GameObject prefab) where T : ICastable
+        {
+            if (SpellEventManager.Instance.GetCooldownStatus<T>())
+            {
+                return false;
+            }
+            else 
+            {
+                CreateSpell<T>(prefab, faceRight);
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Creates spell game object and adds it to the game.
+        /// Sets casted spell on cooldown.
+        /// </summary>
+        /// <param name="prefab">Spell prefab</param>
+        /// <param name="faceRight">Direction caster is facing</param>
+        /// <typeparam name="T">Spell type</typeparam>
+        private void CreateSpell<T>(GameObject prefab, bool faceRight) where T : ICastable
+        {
+            GameObject spellGameObject = Instantiate(prefab, this.Caster.transform.position, Quaternion.identity);
+            T spellScript = spellGameObject.GetComponent<T>();
+            spellScript.Cast(this.Caster, faceRight);
+            SpellEventManager.Instance.SetCooldown<T>();
         }
 
     #endregion

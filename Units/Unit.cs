@@ -1,17 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 using WizardAdventure.Effects;
-
-public enum DebuffName
-{
-    Chilled
-}
+using WizardAdventure.Spells;
 
 public abstract class Unit : MonoBehaviour, IMoveable
 {
-#region [Properties]
 
-    public int Health { get; set; }
+#region [Properties]
+    public float Health { get; set; }
     public int Damage { get; set; }
     public bool IsFrozen { get; set; }
 
@@ -32,11 +28,10 @@ public abstract class Unit : MonoBehaviour, IMoveable
     public MovementState     MoveState    { get; set; } = MovementState.NULL;
     protected SpriteRenderer Renderer     { get; private set; }
 
-    public bool colorChanged = false;
-
+    public bool ColorChanged { get; set; }
     private Color originalColor;
-
 #endregion
+
 #region [UnityAPI]
 
     protected virtual void Awake() 
@@ -67,6 +62,17 @@ public abstract class Unit : MonoBehaviour, IMoveable
     /// </summary>
     public virtual void SetCastAnimation()
     {}
+
+    #region [Getters]
+
+    /// <summary>
+    /// Gets unit's sprite color
+    /// </summary>
+    /// <returns>Units sprite color</returns>
+    public Color GetColor()
+    {
+        return this.Renderer.color;
+    }
 
     /// <summary>
     /// Returns the center point of the game object.
@@ -241,9 +247,10 @@ public abstract class Unit : MonoBehaviour, IMoveable
         }
         return height;
     }
-
+    #endregion
+    
     /// <summary>
-    /// 
+    /// Moves Unit horizontally
     /// </summary>
     /// <param name="direction"></param>
     public void Move(Vector2 direction)
@@ -261,27 +268,18 @@ public abstract class Unit : MonoBehaviour, IMoveable
     }
 
     /// <summary>
-    /// 
+    /// Changes sprite color to specified color.
     /// </summary>
-    /// <returns></returns>
-    public Color GetColor()
-    {
-        return this.Renderer.color;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="color"></param>
+    /// <param name="color">New color</param>
     public void ChangeColor(Color color)
     {
         originalColor = this.Renderer.color;
         this.Renderer.color = color;
-        this.colorChanged = true;
+        this.ColorChanged = true;
     }
 
     /// <summary>
-    /// 
+    /// Changes sprite color back to original color.
     /// </summary>
     public void ResetColor()
     {
@@ -289,9 +287,9 @@ public abstract class Unit : MonoBehaviour, IMoveable
     }
 
     /// <summary>
-    /// 
+    /// Moves Unit
     /// </summary>
-    /// <param name="x_AxisMovement"></param>
+    /// <param name="x_AxisMovement">X axis movement</param>
     public virtual void Move(float x_AxisMovement)
     {
         if (!Mathf.Approximately(x_AxisMovement, 0.0f))
@@ -316,9 +314,8 @@ public abstract class Unit : MonoBehaviour, IMoveable
         this.FaceRigth = x_AxisMovement > 0.0f ? true : false;
     }
 
-
     /// <summary>
-    /// 
+    /// Makes Unit jump.
     /// </summary>
     public virtual void Jump()
     {
@@ -326,11 +323,10 @@ public abstract class Unit : MonoBehaviour, IMoveable
         this.Idle = true;
     }
 
-
     /// <summary>
-    /// 
+    /// Makes unit jump while moving on x-axis
     /// </summary>
-    /// <param name="x_Axis_movement"></param>
+    /// <param name="x_Axis_movement">x-axis movement</param>
     public virtual void Jump(float x_Axis_movement)
     {
         float jumpPowerSide;
@@ -356,7 +352,24 @@ public abstract class Unit : MonoBehaviour, IMoveable
 
 #region [Protected Methods]
 
-    
+
+    protected virtual void Die()
+    {
+        this.UnitAnimator.SetTrigger("Death");
+        Destroy(this.gameObject, this.UnitAnimator.GetCurrentAnimatorStateInfo(0).length);
+    }
+
+    protected virtual bool OnGotHit(IDamageSource damageSrc, Vector2 hitLocation)
+    {
+        this.Health -= damageSrc.GetDamage();
+        if (this.Health <= 0)
+        {
+            Die();
+            return true;
+        }
+        return false;
+    }
+
 
     /// <summary>
     /// Sets boolean values for unit's animator for "FaceRigth" and "Idle"
@@ -368,7 +381,7 @@ public abstract class Unit : MonoBehaviour, IMoveable
     }
 
     /// <summary>
-    /// 
+    /// Initializes unit.
     /// </summary>
     protected virtual void InitializeUnit()
     {
@@ -381,4 +394,5 @@ public abstract class Unit : MonoBehaviour, IMoveable
     }
 
 #endregion
+    
 }

@@ -25,7 +25,7 @@ namespace WizardAdventure.Spells
         /// Ensures only one instance of this class exists
         /// at any time.
         /// </summary>
-        public void Awake() 
+        private void Awake() 
         {
             if (Instance == null)
             {
@@ -39,6 +39,22 @@ namespace WizardAdventure.Spells
     #endregion
 
     #region [Public Methods]
+
+        /// <summary>
+        /// Get spell's cooldown status
+        /// </summary>
+        /// <typeparam name="T">Spell Type</typeparam>
+        /// <returns></returns>
+        public bool GetCooldownStatus<T>() where T: ICastable
+        {
+            if (typeof(T) == typeof(Frostblast))
+                return this.FrostBlastOnCooldown;
+            if (typeof(T) == typeof(Fireball))
+                return this.FireballOnCooldown;
+            if (typeof(T) == typeof(Blink))
+                return this.BlinkOnCooldown;
+            return true;
+        }
 
         /// <summary>
         /// Sets debuff to target. Before setting

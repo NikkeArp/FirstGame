@@ -2,6 +2,6 @@ namespace WizardAdventure.Spells
 {
     public interface ICastable
     {
-        float BaseCooldown { get; set; }
+        void Cast(Unit caster, bool faceRight);
     }
 }

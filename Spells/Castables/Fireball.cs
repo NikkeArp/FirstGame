@@ -57,9 +57,7 @@ namespace WizardAdventure.Spells
             this.SpawnOffset = new Tuple<float, float>(1.0f, 0.5f);
 
             this.damage = 2.0f;
-
-            this.Cooldown = 3.0f;
-            BaseCooldown = this.Cooldown;
+            this.Cooldown = BaseCooldown = 3.0f;
         }
         
     #endregion
