@@ -4,15 +4,48 @@ using WizardAdventure.Effects;
 
 namespace WizardAdventure.Spells
 {
+    /// <summary>
+    /// Blink is castable utility spell that teleports
+    /// caster at this facing direction. If there is an 
+    /// obstacle in the way, blink transports caster right before it.
+    /// </summary>
     public class Blink : UtilitySpell
     {
 
     #region [Properties]
+        /// <summary>
+        /// Blink's base cooldown. Effects all Blink objects.
+        /// YOU SHOULD NOT EDIT THIS!!
+        /// No one should. Ever. Just let it be.
+        /// </summary>
+        /// <value>Gets and Sets Blink base cooldown</value>
         new public static float BaseCooldown { get; private set; }
-        private Light floorLigth = null;
+
+        /// <summary>
+        /// Light component in the floor.
+        /// </summary>
+        /// <value>Gets and Sets light component</value>
+        public Light FloorLight { get; private set; }
+
+        /// <summary>
+        /// Light component in the center of the blink gameobject.
+        /// </summary>
+        /// <value>Gets and Sets light component</value>
+        public Light CenterLight { get; private set; }
+
+        /// <summary>
+        /// LightEffects script handles this spell's 
+        /// light effects.
+        /// </summary>
+        /// <value>Get and Set light effect script</value>
         public LightEffects FloorLightEffect { get; private set; }
+
+        /// <summary>
+        /// LightEffects script handles this spell's 
+        /// light effects.
+        /// </summary>
+        /// <value>Get and Set light effect script</value>
         public LightEffects CenterLightEffect { get;  private set; }
-        private Light centerLigth = null;
     #endregion
 
     #region [Public Methods]
@@ -33,7 +66,7 @@ namespace WizardAdventure.Spells
             else
             {
                 this.Caster = caster;
-                Vector2 blinkVector = faceRigth ? new Vector2(this.castRange, 0) : new Vector2(-this.castRange, 0);
+                Vector2 blinkVector = faceRigth ? new Vector2(this.CastRange, 0) : new Vector2(-this.CastRange, 0);
                 RaycastHit2D hit = Physics2D.Raycast(this.Caster.transform.position, blinkVector);
 
                 if (hit.collider != null)
@@ -59,12 +92,12 @@ namespace WizardAdventure.Spells
         /// </summary>
         protected override void InitializeSpell()
         {
-            this.floorLigth = this.transform.Find("FloorLight").GetComponent<Light>();
-            this.centerLigth = this.transform.Find("CenterLight").GetComponent<Light>();
+            this.FloorLight = this.transform.Find("FloorLight").GetComponent<Light>();
+            this.CenterLight = this.transform.Find("CenterLight").GetComponent<Light>();
             this.FloorLightEffect = this.transform.Find("FloorLight").GetComponent<LightEffects>();
             this.CenterLightEffect = this.transform.Find("CenterLight").GetComponent<LightEffects>();
 
-            this.castRange = 5.0f;
+            this.CastRange = 5.0f;
             this.IsAgressive = false;
             this.Cooldown = BaseCooldown =  5.0f;
             base.InitializeSpell();
@@ -87,7 +120,7 @@ namespace WizardAdventure.Spells
             if (hit.collider.gameObject.CompareTag("OutterWall"))
                 {
                     float distance = Mathf.Abs(hit.point.x - this.Caster.transform.position.x);
-                    if (distance < this.castRange)
+                    if (distance < this.CastRange)
                     {
                         // Obstacle in the path. Blink will transport caster next to it.
 
@@ -129,8 +162,8 @@ namespace WizardAdventure.Spells
         /// <returns></returns>
         private async void BlinkWithWarp(Vector3 originalScale, Vector3 newPosition) 
         {
-            float originalIntensity = this.floorLigth.intensity;
-            float originalRange = this.floorLigth.range;
+            float originalIntensity = this.FloorLight.intensity;
+            float originalRange = this.FloorLight.range;
 
             LigthEffectsAsync(originalIntensity);
 
@@ -146,10 +179,10 @@ namespace WizardAdventure.Spells
 
             // Move caster and floor ligth effect in between scaling.
             this.Caster.transform.position = newPosition;
-            this.floorLigth.transform.position = new Vector3(newPosition.x, newPosition.y,
-                floorLigth.transform.position.z);
-            this.centerLigth.transform.position = new Vector3(newPosition.x, newPosition.y,
-                floorLigth.transform.position.z);
+            this.FloorLight.transform.position = new Vector3(newPosition.x, newPosition.y,
+                FloorLight.transform.position.z);
+            this.CenterLight.transform.position = new Vector3(newPosition.x, newPosition.y,
+                FloorLight.transform.position.z);
 
             // Scale caster back up to original scale.
             while (this.Caster.transform.localScale.y < originalScale.y)

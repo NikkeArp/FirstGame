@@ -2,11 +2,25 @@ using UnityEngine;
 
 namespace WizardAdventure.Spells
 {
+    /// <summary>
+    /// Debuff adds negative modifiers to it's target Unit.
+    /// Debuffs are usually removed after fixed duration has passed. 
+    /// </summary>
     public abstract class Debuff : MonoBehaviour
     {
     #region [Properties]
-        protected float durationInSeconds;
-        protected Unit target;
+
+        /// <summary>
+        /// Debuff duration in seconds.
+        /// </summary>
+        /// <value>Gets and Sets debuff duration value in seconds.</value>
+        public float DurationInSeconds { get; protected set; }
+
+        /// <summary>
+        /// Debuff's target unit.
+        /// </summary>
+        /// <value>Sets and Gets debuff's tareget unit.</value>
+        public Unit Target { get; protected set; }
     #endregion
         
         protected void Awake() 
@@ -20,7 +34,7 @@ namespace WizardAdventure.Spells
         /// <param name="target"></param>
         protected virtual void UpdateAttributes(Unit target)
         {
-            this.target = target;
+            this.Target = target;
         }
 
         /// <summary>

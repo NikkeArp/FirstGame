@@ -1,5 +1,3 @@
-#define DEBUG
-
 using UnityEngine;
 using System.Collections;
 using System;
@@ -7,13 +5,48 @@ using System.Reflection;
 
 namespace WizardAdventure.Spells
 {
+    /// <summary>
+    /// SpellEventManager manages spell cooldowns and possible
+    /// debuffs. This class is used by static instance. Only one
+    /// Instance is allowed to exist at the time.
+    /// </summary>
     public class SpellEventManager : MonoBehaviour
     {
     #region [Properties]
+        /// <summary>
+        /// Static instance of this class. This instance
+        /// is the spell event manager that is referenced when setting
+        /// cooldowns etc. Only one instance of manager is allowed.
+        /// </summary>
+        /// <value>Gets and Sets static SpellEventManager Instance</value>
         public static SpellEventManager Instance { get; private set; } = null;
+
+        /// <summary>
+        /// Utility spell Blink's cooldown flag.
+        /// Blink teleport spell can't be casted during cooldown.
+        /// </summary>
+        /// <value>Gets and Sets Blink cooldown.</value>
         public bool BlinkOnCooldown { get; private set; } = false;
+
+        /// <summary>
+        /// Projectile spell Fireball's cooldown flag.
+        /// Fireball spell can't be casted during cooldown.
+        /// </summary>
+        /// <value>Gets and Sets Fireball cooldown.</value>
         public bool FireballOnCooldown { get; private set; } = false;
+
+        /// <summary>
+        /// Projectile spell Frostblast's cooldown flag.
+        /// Frostblast spell can't be casted during cooldown.
+        /// </summary>
+        /// <value>Gets and Sets Frostblast cooldown.</value>
         public bool FrostBlastOnCooldown { get; private set; } = false;
+
+        /// <summary>
+        /// Global Cooldown is set after every successful spellcast.
+        /// No spell can be cast during Global cooldown.
+        /// </summary>
+        /// <value>Gets and Sets global cooldown.</value>
         public bool GlobalCooldown { get; private set; } = false;
         
     #endregion
@@ -61,30 +94,20 @@ namespace WizardAdventure.Spells
         /// the debuff, checks if the target unit is already
         /// affected by the same type of debuff.
         /// </summary>
-        /// <param name="debuffName">Debuff identifier</param>
         /// <param name="target">Debuff target</param>
-        public void SetDebuff(DebuffName debuffName, Unit target)
+        /// <typeparam name="T">Type of debuff</typeparam>
+        public void SetDebuff<T>(Unit target) 
+            where T : Debuff
         {
-            switch (debuffName)
+            Type spellType = typeof(T);
+            if (spellType == typeof(Chilled))
             {
-                // Chilled debuff slows freezes its target, slowing
-                // movement speed and adding icy visual effects. Dispelled
-                // automatically after it's duration has passed.
-                case DebuffName.Chilled:
-                {
-                    // Target is already chilled.
-                    if (target.ActiveDebuffs.Contains(DebuffName.Chilled))
-                    {
-                        break;
-                    }
-                    else
-                    {   // Apply chilled debuff to target.
-                        this.GetComponent<Chilled>().ApplyDebuff(target);
-                        break;
-                    }
+                if (!target.ActiveDebuffs.Contains(DebuffName.Chilled))
+                {   
+                    // Apply chilled debuff to target.
+                    this.GetComponent<Chilled>().ApplyDebuff(target);
+                    return;
                 }
-                default:
-                    break;
             }
         }
 
@@ -101,73 +124,23 @@ namespace WizardAdventure.Spells
         /// Set specified spell on cooldown. Cooldown
         /// is removed automatically after duration has passed.
         /// </summary>
-        /// <param name="spell">Spell object</param>
-        [Obsolete("This overload is not recommended, please use Generic version instead.", true)]
-        public void SetCooldown(Spell spell)
-        {
-            // Get the type of the spell object.
-            // All spells are inherited from the Spell class.
-            Type type =  spell.GetType();
-
-            // Blink spell teleports caster forward
-            if (type == typeof(Blink))
-            {
-                this.StartCoroutine(setCD(spell));
-                return;
-            }
-            // Frostblast shoots iceshard forwards, that
-            // slows enemies that got hit.
-            if (type == typeof(Frostblast))
-            {
-                this.StartCoroutine(setCD(spell));
-                return;
-            }
-        }
-
-        /// <summary>
-        /// Set specified spell on cooldown. Cooldown
-        /// is removed automatically after duration has passed.
-        /// </summary>
-        /// <param name="spell">Spell object</param>
-        [Obsolete("This overload is not recommended, please use Generic version instead.", true)]
-        public void SetCooldown(Type spell)
-        {
-            // Blink spell teleports caster forward
-            if (spell == typeof(Blink))
-            {
-                this.StartCoroutine(setCD<Blink>());
-                return;
-            }
-            // Frostblast shoots iceshard forwards, that
-            // slows enemies that got hit.
-            if (spell == typeof(Frostblast))
-            {
-                this.StartCoroutine(setCD<Frostblast>());
-                return;
-            }
-        }
-
-        /// <summary>
-        /// Set specified spell on cooldown. Cooldown
-        /// is removed automatically after duration has passed.
-        /// </summary>
         public void SetCooldown<T>()
         {
             Type spellType = typeof(T);
 
              if (spellType == typeof(Fireball))
             {
-                this.StartCoroutine(setCD<Fireball>());
+                this.StartCoroutine(AddCooldown<Fireball>());
                 return;
             }
             if (spellType == typeof(Blink))
             {
-                this.StartCoroutine(setCD<Blink>());
+                this.StartCoroutine(AddCooldown<Blink>());
                 return;
             }
             if (spellType == typeof(Frostblast))
             {
-                this.StartCoroutine(setCD<Frostblast>());
+                this.StartCoroutine(AddCooldown<Frostblast>());
                 return;
             }
         }
@@ -192,31 +165,9 @@ namespace WizardAdventure.Spells
         /// Sets specified spell on cooldown. Cooldown
         /// is removed automatically.
         /// </summary>
-        /// <param name="spell"></param>
-        /// <returns></returns>
-        private IEnumerator setCD(Spell spell)
-        {
-            if (spell is Blink)
-            {
-                this.BlinkOnCooldown = true;
-                yield return new WaitForSeconds(spell.Cooldown);
-                this.BlinkOnCooldown = false;
-            }
-            else if (spell is Frostblast)
-            {
-                this.FrostBlastOnCooldown = true;
-                yield return new WaitForSeconds(spell.Cooldown);
-                this.FrostBlastOnCooldown = false;
-            }
-        }
-
-        /// <summary>
-        /// Sets specified spell on cooldown. Cooldown
-        /// is removed automatically.
-        /// </summary>
         /// <typeparam name="T">Type of the spell</typeparam>
         /// <returns></returns>
-        private IEnumerator setCD<T>()
+        private IEnumerator AddCooldown<T>()
         {
             Type spellType = typeof(T);
             if (spellType == typeof(Fireball))

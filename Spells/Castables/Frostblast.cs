@@ -5,13 +5,44 @@ using System.Collections;
 
 namespace WizardAdventure.Spells
 {
+    /// <summary>
+    /// Frostblast is a projectile spell that shoots ice shard at
+    /// casters facing direction. If target hits enemy Unit, it shatters
+    /// and applies chilled debuff to that enemy. Chilled debuff slows target.
+    /// Also deals small amount of damage.
+    /// </summary>
     public class Frostblast : ProjectileSpell
     {
 
     #region [Properties]
+        /// <summary>
+        /// Frostblast's base cooldown. Effects all frostblast objects.
+        /// YOU SHOULD NOT EDIT THIS!!
+        /// No one should. Ever. Just let it be.
+        /// </summary>
+        /// <value>
+        /// Gets and Sets value of Frostblast's base cooldown.
+        /// </value>
         new public static float BaseCooldown { get; private set; }
+
+        /// <summary>
+        /// FrostBlast's constant value of slow effect.
+        /// Slow effect is a multiplier when calculating slowed target's
+        /// temporary movement speed.
+        /// </summary>
         private const float SLOW_EFFECT = 0.4f;
+
+        /// <summary>
+        /// Frostblast's constant value of slow duration.
+        /// After this duration debuff is lifted.
+        /// </summary>
         private const float SLOW_DURATION = 2.0f;
+
+        /// <summary>
+        /// LightEffects script handles this spell's 
+        /// light effects.
+        /// </summary>
+        /// <value>Get and Set light effect script</value>
         public LightEffects LightEffects { get; private set; }
     #endregion
 
@@ -47,7 +78,7 @@ namespace WizardAdventure.Spells
             Unit collidedUnit = other.gameObject.GetComponent<Unit>();
             if (collidedUnit != null)
             {
-                SpellEventManager.Instance.SetDebuff(DebuffName.Chilled, collidedUnit);
+                SpellEventManager.Instance.SetDebuff<Chilled>(collidedUnit);
             }
             this.LightEffects.AddIntensityInstantly(5.0f, 2.0f);
             this.LightEffects.BeginFade(0.0f, 0.0f, 0.2f, 0.2f, 0.01f);
@@ -135,9 +166,9 @@ namespace WizardAdventure.Spells
             this.SpawnOffset = new Tuple<float, float>(1.0f, 0.5f);
             this.MaxSpeed = 15f;
             this.LightEffects = GetComponentInChildren<LightEffects>();
-            this.damage = 2;
+            this.Damage = 2;
             this.Cooldown = BaseCooldown =  2.0f;
-            this.castRange = 50f;
+            this.CastRange = 50f;
         }
 
     #endregion

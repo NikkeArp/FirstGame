@@ -5,16 +5,55 @@ using System;
 
 namespace WizardAdventure.Spells
 {
+    /// <summary>
+    /// Chilled debuff slows it's target for fixed duration.
+    /// Also modifies target's appereance using Unit's child DebuffEffect gameobject.
+    /// After duration has passed, slow and visual modifiers are removed.
+    /// </summary>
     public class Chilled : Debuff
     {
     #region [Properties]
-        private const float SLOW_MULTIPLIER = 0.4f;
-        private Color targetOriginalColor;
-        private Color targetOriginalLigthColor;
-        private Color newSpriteColor;
-        private Color chillEffectColor;
+
+        /// <summary>
+        /// Chilled particle effect prefab. Set in editor.
+        /// </summary>
         public GameObject chilledParticleEffectPrefab;
-        private GameObject chilledParticleEffect;
+        
+        /// <summary>
+        /// Chilled debuff's constant slow multiplier.
+        /// </summary>
+        private const float SLOW_MULTIPLIER = 0.4f;
+
+        /// <summary>
+        /// Target's original sprite color.
+        /// </summary>
+        /// <value>Get and Set target's original sprite color.</value>
+        public Color TargetOriginalColor { get; private set; }
+
+        /// <summary>
+        /// Target's light component's original color.
+        /// </summary>
+        /// <value>Get and Set target's original light color.</value>
+        public Color TargetOriginalLightColor { get; private set; }
+
+        /// <summary>
+        /// New Sprite color
+        /// </summary>
+        /// <value>Get and Set new sprite color</value>
+        public Color NewSpriteColor { get; private set; }
+
+        /// <summary>
+        /// Chilled effect color. usually blueish
+        /// </summary>
+        /// <value>Get and Set Chilled debuff effect color.</value>
+        public Color ChillEffectColor { get; private set; }
+
+    
+        /// <summary>
+        /// Chilled particle effect. Shoots snowflakes around.
+        /// </summary>
+        /// <value>Get and Set Chilled particle effect.</value>
+        public GameObject ChilledParticleEffect { get; private set; }
     #endregion
 
         /// <summary>
@@ -22,9 +61,9 @@ namespace WizardAdventure.Spells
         /// </summary>
         protected override void InitializeDebuff()
         {
-            this.newSpriteColor = Color.cyan;
-            this.chillEffectColor = new Color(15, 55, 125);
-            this.durationInSeconds = 4.0f;
+            this.NewSpriteColor = Color.cyan;
+            this.ChillEffectColor = new Color(15, 55, 125);
+            this.DurationInSeconds = 4.0f;
         }
 
         /// <summary>
@@ -50,23 +89,23 @@ namespace WizardAdventure.Spells
             // Instantiate chilled particle effect prefab and set it
             // as a child of the target.
 
-            Vector3 chilledEffetPos = this.target.GetCenterPoint<SpriteRenderer>();
-            this.chilledParticleEffect = Instantiate(chilledParticleEffectPrefab,
+            Vector3 chilledEffetPos = this.Target.GetCenterPoint<SpriteRenderer>();
+            this.ChilledParticleEffect = Instantiate(chilledParticleEffectPrefab,
                 chilledEffetPos, Quaternion.identity);
-            this.chilledParticleEffect.transform.parent = this.target.transform;
-            this.chilledParticleEffect.gameObject.SetActive(true);
+            this.ChilledParticleEffect.transform.parent = this.Target.transform;
+            this.ChilledParticleEffect.gameObject.SetActive(true);
 
             // Apply chilled debuff effects to target.
             this.AffectTarget();
 
             // Wait for debuffs duration.
-            yield return new WaitForSeconds(this.durationInSeconds);
+            yield return new WaitForSeconds(this.DurationInSeconds);
 
             // Reset target by removing all debuff effects.
             this.ResetTarget();
 
             // After duration, remove chilled debuff from targets debuff list.
-            this.target.ActiveDebuffs.Remove(DebuffName.Chilled);
+            this.Target.ActiveDebuffs.Remove(DebuffName.Chilled);
         }
 
         /// <summary>
@@ -75,21 +114,21 @@ namespace WizardAdventure.Spells
         private void AffectTarget()
         {
             // If target has its own light effects => Turn them off 
-            if (this.target is ILightUp litObject)
+            if (this.Target is ILightUp litObject)
             {
                 litObject.GetEffectController().DisableLight();
             }
 
             // Change sprite color to light blue.
-            this.target.ChangeColor(this.newSpriteColor);
+            this.Target.ChangeColor(this.NewSpriteColor);
 
             // Activate targets child Debuff effect gameobject
             // and change its color to light blue.
-            this.target.DebuffEffect.gameObject.SetActive(true);
-            this.target.DebuffEffect.ChangeColor(this.chillEffectColor);
+            this.Target.DebuffEffect.gameObject.SetActive(true);
+            this.Target.DebuffEffect.ChangeColor(this.ChillEffectColor);
 
             // Slow target based on chilled slow multiplier.
-            this.target.MoveSpeed *= SLOW_MULTIPLIER;
+            this.Target.MoveSpeed *= SLOW_MULTIPLIER;
         }
 
         /// <summary>
@@ -99,21 +138,21 @@ namespace WizardAdventure.Spells
         {
             // Get units static BaseMoveSpeed propertie dynamically using
             // Reflections. Targets movement speed is returned back to normal.
-            Type targetType = this.target.GetType();
+            Type targetType = this.Target.GetType();
             PropertyInfo propInfo = targetType.GetProperty("BaseMoveSpeed", BindingFlags.Public | BindingFlags.Static);
             object value = propInfo.GetValue(null);
-            this.target.MoveSpeed = (float)value;
+            this.Target.MoveSpeed = (float)value;
 
             // Turn units own ligth effect back on.
-            if (this.target is ILightUp litObject)
+            if (this.Target is ILightUp litObject)
             {
                 litObject.GetEffectController()?.EnableLight();
             }
 
             // Turn units debuff effects off.
-            this.target.DebuffEffect.gameObject.SetActive(false);
-            this.target.ChangeColor(targetOriginalColor);
-            Destroy(chilledParticleEffect.gameObject);
+            this.Target.DebuffEffect.gameObject.SetActive(false);
+            this.Target.ChangeColor(TargetOriginalColor);
+            Destroy(ChilledParticleEffect.gameObject);
         }
 
         /// <summary>
@@ -123,14 +162,14 @@ namespace WizardAdventure.Spells
         protected override void UpdateAttributes(Unit target)
         {
             base.UpdateAttributes(target);
-            this.targetOriginalColor = this.target.GetColor();
+            this.TargetOriginalColor = this.Target.GetColor();
 
             // If target has its own light effects 
             //    => store color in variable.
             if (target is ILightUp litObject)
             {
                 Light targetsOwnLigth = litObject.GetEffectController().GetComponent<Light>();
-                this.targetOriginalLigthColor = targetsOwnLigth.color;
+                this.TargetOriginalLightColor = targetsOwnLigth.color;
             }
         }
     }

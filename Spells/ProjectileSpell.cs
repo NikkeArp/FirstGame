@@ -3,16 +3,57 @@ using System;
 
 namespace WizardAdventure.Spells
 {
-    public class ProjectileSpell : DamageSpell, ICastable
+    /// <summary>
+    /// Abstact class of projectile spell. Implements ICastable.
+    /// Projectile spells shoot projectiles at caster's facing direction,
+    /// usually dealing damage and debuffs to hitted enemy Units.
+    /// </summary>
+    public abstract class ProjectileSpell : DamageSpell, ICastable
     {
     #region [Properties]
-        new public static float BaseCooldown { get; private set; }
-        protected Collider2D projectileCollider = null;
-        protected Vector2 LaunchDirection = Vector2.zero;
-        protected Rigidbody2D Rigidbody = null;
-        protected bool faceRight = false;
+
+        /// <summary>
+        /// Projectile spell's 2D Collider component.
+        /// </summary>
+        /// <value>Get and Set Collider component.</value>
+        public Collider2D ProjectileCollider { get; protected set; }
+
+        /// <summary>
+        /// Projectile spell's 2D Rigidbody component.
+        /// </summary>
+        /// <value>Get and Set Rigidbody component.</value>
+        public Rigidbody2D Rigidbody { get; protected set; }
+
+        /// <summary>
+        /// Projectile spell's launch direction vector.
+        /// </summary>
+        /// <value>Get and Set projectile spell's launch direction vector.</value>
+        public Vector2 LaunchDirection { get; protected set; } = Vector2.zero;
+
+        /// <summary>
+        /// Projectile spell's face right flag.
+        /// </summary>
+        /// <value>Get and Set projectile spell's face right flag.</value>
+        public bool FaceRight { get; protected set; } = false;
+
+        /// <summary>
+        /// Projectile spell's spawn offset as float Tuple.
+        /// When projectile gameobject is instansiated, this offset
+        /// is used to move projectile away from caster's game object.
+        /// </summary>
+        /// <value>Get and Set projectile spell's spawn offset</value>
         public Tuple<float, float> SpawnOffset { get; protected set; }
+
+        /// <summary>
+        /// Projectile spell's max speed.
+        /// </summary>
+        /// <value>Get and Set Max speed</value>
         public float MaxSpeed { get; protected set; }
+
+        /// <summary>
+        /// Projectile spells start speed.
+        /// </summary>
+        /// <value>Get and set start speed.</value>
         public float StartSpeed { get; protected set; }
     #endregion
 
@@ -26,7 +67,7 @@ namespace WizardAdventure.Spells
         protected virtual void OnCollisionEnter2D(Collision2D other) 
         {
             this.StopProjectile();
-            this.spellAnimator.SetTrigger("Hit");
+            this.SpellAnimator.SetTrigger("Hit");
         }
 
         /// <summary>
@@ -34,7 +75,7 @@ namespace WizardAdventure.Spells
         /// </summary>
         protected virtual void Update() 
         {
-            if (transform.position.magnitude > this.castRange)
+            if (transform.position.magnitude > this.CastRange)
             {
                 Destroy(this.gameObject);
             }
@@ -66,7 +107,7 @@ namespace WizardAdventure.Spells
             if (Mathf.Abs(this.Rigidbody.velocity.x) < this.MaxSpeed)
             {
                 Vector2 newSpeed = this.Rigidbody.velocity;
-                newSpeed.x += this.faceRight ? 0.2f : -0.2f;
+                newSpeed.x += this.FaceRight ? 0.2f : -0.2f;
                 this.Rigidbody.velocity = newSpeed;
             }
         }
@@ -81,7 +122,7 @@ namespace WizardAdventure.Spells
         protected virtual void UpdateSpellInfo(Unit caster, bool faceRight, Tuple<float, float> startOffset)
         {
             this.Caster = caster;
-            this.faceRight = faceRight;
+            this.FaceRight = faceRight;
             this.LaunchDirection = faceRight ? Vector2.right : Vector2.left;
 
             Vector3 startPosition = this.Caster.transform.position;
@@ -98,7 +139,7 @@ namespace WizardAdventure.Spells
         /// <param name="speed"></param>
         protected virtual void Launch(Vector2 direction, float speed)
         {
-            if (!this.faceRight)
+            if (!this.FaceRight)
             {
                 transform.localScale = new Vector3(-this.transform.localScale.x, this.transform.localScale.y, 1);
             }
@@ -114,7 +155,7 @@ namespace WizardAdventure.Spells
         {
             base.InitializeSpell();
             this.Rigidbody = this.GetComponent<Rigidbody2D>();
-            this.projectileCollider = this.GetComponent<Collider2D>();
+            this.ProjectileCollider = this.GetComponent<Collider2D>();
         }
 
         /// <summary>
@@ -123,7 +164,7 @@ namespace WizardAdventure.Spells
         protected virtual void StopProjectile()
         {
             this.Rigidbody.velocity = Vector2.zero;
-            this.projectileCollider.enabled = false;
+            this.ProjectileCollider.enabled = false;
         }
 
     #endregion

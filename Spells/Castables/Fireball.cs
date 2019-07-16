@@ -4,19 +4,27 @@ using System;
 
 namespace WizardAdventure.Spells
 {
+    /// <summary>
+    /// Fireball projectile spell that shoots ball of flaming
+    /// rock at caster's facing direction. If projectile hits enemy Unit,
+    /// Explodes and deals damage.
+    /// </summary>
     public class Fireball : ProjectileSpell
     {
     #region [Properties]
         /// <summary>
-        /// 
+        /// Fireball's base cooldown. Effects all fireball objects.
+        /// YOU SHOULD NOT EDIT THIS!!
+        /// No one should. Ever. Just let it be.
         /// </summary>
-        /// <value></value>
+        /// <value>Gets and Sets Fireball base cooldown</value>
         new public static float BaseCooldown { get; private set; }
 
         /// <summary>
-        /// 
+        /// LightEffects script handles this spell's 
+        /// light effects.
         /// </summary>
-        /// <value></value>
+        /// <value>Get and Set light effect script</value>
         public LightEffects LightEffect { get; private set; }
     #endregion
 
@@ -60,12 +68,12 @@ namespace WizardAdventure.Spells
             base.InitializeSpell();
             this.StartSpeed = 2f;
             this.MaxSpeed = 15f;
-            this.castRange = 50f;
+            this.CastRange = 50f;
 
             this.LightEffect = GetComponentInChildren<LightEffects>();
             this.SpawnOffset = new Tuple<float, float>(1.0f, 0.5f);
 
-            this.damage = 2.0f;
+            this.Damage = 2.0f;
             this.Cooldown = BaseCooldown = 3.0f;
         }
         

@@ -3,12 +3,33 @@ using System;
 
 namespace WizardAdventure.Spells
 {
+    /// <summary>
+    /// SpellBook game object controlls players spells.
+    /// If player presses spell key, the spell casting starts here.
+    /// SpellBook contains spell gameobject prefabs, that are set in editor.
+    /// </summary>
     public class SpellBook : MonoBehaviour
     {
     #region [Properties]
+        /// <summary>
+        /// Caster Unit.
+        /// </summary>
+        /// <value>Get and set caster Unit</value>
         public Unit Caster { get; set; }
+
+        /// <summary>
+        /// Frostblast Prefab. Set in editor.
+        /// </summary>
         public GameObject FrostBlastPrefab = null;
+
+        /// <summary>
+        /// Blink spell prefab. Set in editor.
+        /// </summary>
         public GameObject BlinkPrefab = null;
+
+        /// <summary>
+        /// Fireball prefab. Set in editor.
+        /// </summary>
         public GameObject FireballPrefab = null;
     #endregion
 
