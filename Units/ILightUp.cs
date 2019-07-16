@@ -1,6 +1,6 @@
 using WizardAdventure.Effects;
 
-    public interface ILightUp 
-    {
-        GlowEffect GetEffectController();
-    }
+public interface ILightUp 
+{
+    GlowEffect GetEffectController();
+}

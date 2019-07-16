@@ -48,7 +48,6 @@ public class Slime : Enemy, ILightUp
         {
             if (this.OnGotHit(other.collider.gameObject.GetComponent<IDamageSource>(), other.contacts[0].point))
             {
-                Debug.Log("Died");
                 StopAllCoroutines();
             }
         }
@@ -65,7 +64,7 @@ public class Slime : Enemy, ILightUp
 
         // Start the glow effect with random variance added
         GlowLigth.GlowWithVariance(MIN_GLOW_INTENSITY, GLOW_INTERVAL, 0.02f);
-        this.StartPatrolling(5.0f, 2.0f, true);
+        //this.StartPatrolling(5.0f, 2.0f, true);
         base.Start();
     }
 

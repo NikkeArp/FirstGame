@@ -54,6 +54,7 @@ namespace WizardAdventure.Spells
             this.chilledParticleEffect = Instantiate(chilledParticleEffectPrefab,
                 chilledEffetPos, Quaternion.identity);
             this.chilledParticleEffect.transform.parent = this.target.transform;
+            this.chilledParticleEffect.gameObject.SetActive(true);
 
             // Apply chilled debuff effects to target.
             this.AffectTarget();
@@ -106,7 +107,7 @@ namespace WizardAdventure.Spells
             // Turn units own ligth effect back on.
             if (this.target is ILightUp litObject)
             {
-                litObject.GetEffectController().EnableLight();
+                litObject.GetEffectController()?.EnableLight();
             }
 
             // Turn units debuff effects off.

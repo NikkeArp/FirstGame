@@ -63,10 +63,6 @@ public class Player : Unit
             this.MovePLayer(horizontal);
             this.Idle = false;
         }
-        else if (Input.GetKeyDown(KeyCode.Mouse0))
-        {   
-            this.Idle = false;
-        } 
         else
         {
             this.Idle = true;

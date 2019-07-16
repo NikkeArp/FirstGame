@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
 using System.Threading.Tasks;
-using System;
 
 namespace WizardAdventure.Effects
 {
@@ -118,7 +117,6 @@ namespace WizardAdventure.Effects
                 }
             }
         }
-
 
     #endregion
 #region BlendColors
@@ -238,7 +236,7 @@ namespace WizardAdventure.Effects
         /// <param name="targetRange">Target range</param>
         /// <param name="intervals">The amount added to intensity and range</param>
         /// <returns></returns>
-        private IEnumerator Fade(float targetIntensity, float targetRange, float intervals)
+        public IEnumerator Fade(float targetIntensity, float targetRange, float intervals)
         {
             while (this.LightEffect.intensity > targetIntensity)
             {
@@ -281,7 +279,7 @@ namespace WizardAdventure.Effects
         /// <param name="targetIntensity">Target intesity</param>
         /// <param name="intervals">Intervals subtracted from range and intesity</param>
         /// <param name="targetRange">Target range</param>
-        public void Intesify(float targetIntensity, float intervals, float targetRange)
+        public void Intesify(float targetIntensity, float targetRange, float intervals)
         {
             StartCoroutine(IntesifyCoroutine(targetIntensity, intervals, targetRange));
         }
@@ -293,7 +291,7 @@ namespace WizardAdventure.Effects
         /// <param name="intervals">Intervals subtracted from range and intesity</param>
         /// <param name="targetRange">Target range</param>
         /// <returns></returns>
-        private IEnumerator IntesifyCoroutine(float targetIntensity, float targetRange, float intervals)
+        public IEnumerator IntesifyCoroutine(float targetIntensity, float targetRange, float intervals)
         {
             while (this.LightEffect.intensity < targetIntensity)
             {
@@ -302,7 +300,7 @@ namespace WizardAdventure.Effects
                 {
                     this.LightEffect.range += intervals;
                 }
-                yield return new WaitForSeconds(0.05f);
+                yield return new WaitForSeconds(0.1f);
             }
         }
 

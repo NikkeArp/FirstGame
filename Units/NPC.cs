@@ -4,13 +4,12 @@ using System;
 
 public abstract class NPC : Unit
 {
+    
 #region [Properties]
-    // AI
     public Player HumanPlayer { get; private set; }
 #endregion
     
 #region [Protected Methods]
-
 
     /// <summary>
     /// 
@@ -20,7 +19,6 @@ public abstract class NPC : Unit
         base.InitializeUnit();
         this.HumanPlayer = GameObject.Find("Player").GetComponent<Player>();
     }
-
 
     /// <summary>
     /// NPC starts patrolling given distance left to rigth.
@@ -32,7 +30,6 @@ public abstract class NPC : Unit
     {
         StartCoroutine(MoveRoutine(x_Distance, idleTime, moveLeft));
     }
-
 
     /// <summary>
     /// Slime Move routine. Moves across x-axis.virtual idles for few

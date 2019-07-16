@@ -11,9 +11,7 @@ namespace WizardAdventure.Spells
         protected Vector2 LaunchDirection = Vector2.zero;
         protected Rigidbody2D Rigidbody = null;
         protected bool faceRight = false;
-
         public Tuple<float, float> SpawnOffset { get; protected set; }
-
         public float MaxSpeed { get; protected set; }
         public float StartSpeed { get; protected set; }
     #endregion

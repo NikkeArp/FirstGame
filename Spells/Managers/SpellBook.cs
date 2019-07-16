@@ -44,6 +44,14 @@ namespace WizardAdventure.Spells
                         SpellEventManager.Instance.SetGlobalCooldown();
                     }
                 }
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    this.Caster.SetCastAnimation();
+                    if (this.CastSpell<Fireball>(Caster.FaceRigth))
+                    {
+                        SpellEventManager.Instance.SetGlobalCooldown();
+                    }
+                }
             }
         }
 

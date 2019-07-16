@@ -4,9 +4,7 @@ namespace WizardAdventure.Spells
 {
     public abstract class UtilitySpell : Spell, ICastable
     {
-        new public static float BaseCooldown { get; private set; }
-        protected bool isAgressive;
-
+        public bool IsAgressive { get; protected set; }
         public virtual void Cast(Unit caster, bool faceRight)
         {}
     }

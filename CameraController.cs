@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// Camera controller script providing smooth movement and
@@ -12,8 +13,15 @@ public class CameraController : MonoBehaviour
     private const float Z_AXIS = -10;
     private Vector3 currentVelocity = Vector3.zero;
     private bool startCameraMoveDone = false;
+    public Camera Camera { get; private set; }
  #endregion
 #region [Unity API]
+
+    private void Awake() 
+    {
+        this.Camera = this.GetComponent<Camera>();
+        StartCoroutine(StartZoom());
+    }
 
     /// <summary>
     /// Camera movement frame by frame.
@@ -28,6 +36,15 @@ public class CameraController : MonoBehaviour
 
 #endregion
 #region [Protected Methods]
+
+    protected IEnumerator StartZoom()
+    {
+        while (Camera.orthographicSize > 5.0f)
+        {
+            Camera.orthographicSize -= 0.02f;
+            yield return new WaitForSeconds(0.03f);
+        }
+    }
 
     /// <summary>
     /// Checks if camera is at its target position with given precision.

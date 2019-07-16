@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour
     void Awake()
     {
         slimeMergeEventPairs = new List<SlimeMergePair>();
-        if (Instance == null) 
+        if (Instance is null) 
             Instance = this;
         else if (Instance != this) 
             Destroy(gameObject);

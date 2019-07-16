@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using System.Threading.Tasks;
 using WizardAdventure.Effects;
 
@@ -7,6 +6,7 @@ namespace WizardAdventure.Spells
 {
     public class Blink : UtilitySpell
     {
+
     #region [Properties]
         new public static float BaseCooldown { get; private set; }
         private Light floorLigth = null;
@@ -15,9 +15,7 @@ namespace WizardAdventure.Spells
         private GlowEffect centerGlowEffect = null;
     #endregion
 
-    #region [Unity API]
-
-    #endregion
+    #region [Public Methods]
 
         /// <summary>
         /// Casts blink. Blink transports caster to new position based on given distance and
@@ -52,7 +50,30 @@ namespace WizardAdventure.Spells
             }
         }
 
+    #endregion
+    
+    #region [Protected]
 
+        /// <summary>
+        /// Set initial values for attributes.
+        /// </summary>
+        protected override void InitializeSpell()
+        {
+            this.floorLigth = this.transform.Find("FloorLight").GetComponent<Light>();
+            this.glowEffect = this.transform.Find("FloorLight").GetComponent<GlowEffect>();
+            this.centerLigth = this.transform.Find("CenterLight").GetComponent<Light>();
+            this.centerGlowEffect = this.transform.Find("CenterLight").GetComponent<GlowEffect>();
+
+            this.castRange = 5.0f;
+            this.IsAgressive = false;
+            this.Cooldown = BaseCooldown =  5.0f;
+            base.InitializeSpell();
+        }
+    
+    #endregion
+
+    #region [Private Methods]
+        
         /// <summary>
         /// Starts blinking operation. Uses raycast2d to make sure caster
         /// blinks into safe area. If there is an obstacle betweed caster
@@ -88,7 +109,6 @@ namespace WizardAdventure.Spells
             }
         }
 
-
         /// <summary>
         /// Blinks Caster forward. Scales Caster down and
         /// back up during blinking.
@@ -100,7 +120,6 @@ namespace WizardAdventure.Spells
             Vector3 newPosition = (Vector2)this.Caster.transform.position + blinkVector;
             BlinkWithWarp(originalScale, newPosition);
         }
-
 
         /// <summary>
         /// Blinks caster to new position with warping effect.
@@ -143,7 +162,6 @@ namespace WizardAdventure.Spells
             }
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -151,6 +169,12 @@ namespace WizardAdventure.Spells
         /// <returns></returns>
         private async void LigthEffectsAsync(float originalIntensity)
         {
+            /* this.centerGlowEffect.Intesify(8.0f, 6.0f, 0.5f);
+            this.glowEffect.StartFade(0.0f, 0.0f, 0.5f);
+            this.glowEffect.Intesify(originalIntensity, 8.0f, 0.8f);
+            this.centerGlowEffect.StartFade(0.0f, 0.0f, 1.0f);
+            Destroy(this.gameObject);
+            this.Caster.IsFrozen = false; */
             await this.centerGlowEffect.IntesifyAsync(8f, 0.5f, 1);
             await this.glowEffect.FadeAsync(0.0f, 0.8f, 20);
             await this.glowEffect.IntesifyAsync(originalIntensity, 0.8f, 20);
@@ -158,24 +182,8 @@ namespace WizardAdventure.Spells
             Destroy(this.gameObject);
             this.Caster.IsFrozen = false;
         }
+    #endregion
 
-
-        /// <summary>
-        /// Set initial values for attributes.
-        /// </summary>
-        protected override void InitializeSpell()
-        {
-            this.floorLigth = this.transform.Find("FloorLight").GetComponent<Light>();
-            this.glowEffect = this.transform.Find("FloorLight").GetComponent<GlowEffect>();
-            this.centerLigth = this.transform.Find("CenterLight").GetComponent<Light>();
-            this.centerGlowEffect = this.transform.Find("CenterLight").GetComponent<GlowEffect>();
-
-            this.IsOnCooldown = false;
-            this.castRange = 5.0f;
-            this.isAgressive = false;
-            this.Cooldown = BaseCooldown =  5.0f;
-            base.InitializeSpell();
-        }
     }
 }
 

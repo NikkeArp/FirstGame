@@ -27,7 +27,7 @@ namespace WizardAdventure.Spells
         /// </summary>
         private void Awake() 
         {
-            if (Instance == null)
+            if (Instance is null)
             {
                 Instance = this;
             }   
