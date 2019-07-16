@@ -7,8 +7,17 @@ namespace WizardAdventure.Spells
     public class Fireball : ProjectileSpell
     {
     #region [Properties]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value></value>
         new public static float BaseCooldown { get; private set; }
-        private GlowEffect glowEffect = null;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value></value>
+        public LightEffects LightEffect { get; private set; }
     #endregion
 
     #region [Unity API]
@@ -22,8 +31,8 @@ namespace WizardAdventure.Spells
         {
             base.OnCollisionEnter2D(other);
             Unit collidedUnit = other.gameObject.GetComponent<Unit>();
-            this.glowEffect.Intesify(5.0f, 2.0f);
-            this.glowEffect.StartFade(0, 0, 0.2f, 0.01f);
+            this.LightEffect.InstantIntesify(5.0f, 2.0f);
+            this.LightEffect.BeginFade(0.0f, 0.0f, 0.2f, 0.2f, 0.01f);
             Destroy(this.gameObject, 0.4f);
         }
 
@@ -53,7 +62,7 @@ namespace WizardAdventure.Spells
             this.MaxSpeed = 15f;
             this.castRange = 50f;
 
-            this.glowEffect = GetComponentInChildren<GlowEffect>();
+            this.LightEffect = GetComponentInChildren<LightEffects>();
             this.SpawnOffset = new Tuple<float, float>(1.0f, 0.5f);
 
             this.damage = 2.0f;

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using System.Threading.Tasks;
 
 namespace WizardAdventure.Effects
 {
@@ -185,6 +186,34 @@ namespace WizardAdventure.Effects
                 }
 
                 yield return new WaitForSeconds(timePerLoop);
+            }
+        }
+
+        public void InstantIntesify(float targetIntensity, float targetRange)
+        {
+            this.LightComponent.intensity = targetIntensity;
+            this.LightComponent.range = targetRange;
+        }
+
+        public void AddIntesityInstantly(float addedIntensity, float addedRange)
+        {
+            this.LightComponent.intensity += addedIntensity;
+            this.LightComponent.range += addedRange;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="targetIntensity"></param>
+        /// <param name="intensifySpeed"></param>
+        /// <param name="timeIntervals"></param>
+        /// <returns></returns>
+        public async Task IntesifyAsync(float targetIntensity, float intensifySpeed, int timeIntervals)
+        {
+            while (this.LightComponent.intensity < targetIntensity)
+            {
+                this.LightComponent.intensity += intensifySpeed;
+                await Task.Delay(timeIntervals);
             }
         }
     }

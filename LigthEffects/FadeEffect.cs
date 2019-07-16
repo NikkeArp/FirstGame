@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Threading.Tasks;
 
 namespace WizardAdventure.Effects
 {
@@ -183,6 +184,22 @@ namespace WizardAdventure.Effects
                 }
 
                 yield return new WaitForSeconds(timePerLoop);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="targetIntensity"></param>
+        /// <param name="fadeSpeed"></param>
+        /// <param name="timeIntervals"></param>
+        /// <returns></returns>
+        public async Task FadeAsync(float targetIntensity, float fadeSpeed, int timeIntervals)
+        {
+            while (this.LightComponent.intensity > targetIntensity)
+            {
+                this.LightComponent.intensity -= fadeSpeed;
+                await Task.Delay(timeIntervals);
             }
         }
     }

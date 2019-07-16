@@ -12,7 +12,7 @@ public class Slime : Enemy, ILightUp
 {
 
 #region [Properties]
-    public GlowEffect GlowLigth;
+    public LightEffects LightEffect;
     public static float BaseMoveSpeed { get; private set; } // monkaS
     private const float GROWTH_INTERVAL  = 0.1f;
     private const float NEW_GROWTH_SCALE = 1.5f;
@@ -35,11 +35,10 @@ public class Slime : Enemy, ILightUp
             var otherSlime = other.gameObject.GetComponent<Slime>();
             if(GameController.Instance.AddSlimePair(new SlimeMergePair(this, otherSlime)))
             {
-                Color newColor;
-                GlowLigth.BlendColor(other.gameObject.GetComponentInChildren<Light>().color, out newColor);
+                this.LightEffect.BeginColorBlend(other.gameObject.GetComponent<Light>().color, 0.5f);
                 this.transform.position = Vector2.Lerp(this.transform.position, other.transform.position, 0.5f);
                 this.Jump();
-                this.Renderer.color = newColor;
+                this.Renderer.color = this.LightEffect.GetColor();
                 StartCoroutine(Grow(NEW_GROWTH_SCALE, GROWTH_INTERVAL));
             }
         }
@@ -63,7 +62,7 @@ public class Slime : Enemy, ILightUp
         SyncColors(); // Coroutine that runs every half second.
 
         // Start the glow effect with random variance added
-        GlowLigth.GlowWithVariance(MIN_GLOW_INTENSITY, GLOW_INTERVAL, 0.02f);
+        LightEffect.GlowWithVariance(MIN_GLOW_INTENSITY, GLOW_INTERVAL, 0.02f);
         //this.StartPatrolling(5.0f, 2.0f, true);
         base.Start();
     }
@@ -106,7 +105,7 @@ public class Slime : Enemy, ILightUp
     protected override void InitializeUnit()
     {
         base.InitializeUnit();
-        this.GlowLigth = this.GetComponentInChildren<GlowEffect>();
+        this.LightEffect = this.GetComponentInChildren<LightEffects>();
         this.Damage = 5;
         this.Health = 10;
         this.MoveSpeed = BaseMoveSpeed = 4f;
@@ -119,8 +118,9 @@ public class Slime : Enemy, ILightUp
     /// </summary>
     protected override void Die()
     {
-        this.GlowLigth.gameObject.SetActive(true);
-        this.GlowLigth.StartFade(1.0f, 2.0f);
+        this.LightEffect.gameObject.SetActive(true);
+        this.LightEffect.BeginFade(1.0f, 2.0f, 0.5f);
+        //this.LightEffect.StartFade(1.0f, 2.0f);
         base.Die();
     }
 
@@ -138,13 +138,9 @@ public class Slime : Enemy, ILightUp
         this.UnitAnimator.SetTrigger("Jump");
     }
 
-    /// <summary>
-    /// Get Slime's glow effect object.
-    /// </summary>
-    /// <returns>Slime's glow effect object</returns>
-    public GlowEffect GetEffectController()
+    public LightEffects GetEffectController()
     {
-        return this.GlowLigth;
+        return this.LightEffect;
     }
     
 #endregion
@@ -196,9 +192,6 @@ public class Slime : Enemy, ILightUp
         }
         newScaleVector.x = newScaleVector.y = newScale;
         this.transform.localScale = newScaleVector;
-
-        // Slime size has grown, so let ramp up the ligthing to match it.
-        this.GlowLigth.Intesify(0.4f, 0);
     }
 
     /// <summary>

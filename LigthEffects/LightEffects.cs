@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Threading.Tasks;
 
 namespace WizardAdventure.Effects
 {
@@ -16,7 +17,7 @@ namespace WizardAdventure.Effects
         /// this scripts parent objects light.
         /// </summary>
         /// <value>Get and Set GlowEffect object</value>
-        public Glow GlowEffect { get; private set; }
+        public GlowEffect GlowEffect { get; private set; }
 
         /// <summary>
         /// Get and Set FadeEffect object that has the functionality to fade
@@ -52,7 +53,7 @@ namespace WizardAdventure.Effects
         {
             this.LightComponent = this.GetComponent<Light>();
             this.ColorEffect = new ColorEffect(this.gameObject.GetComponent<Light>());
-            this.GlowEffect = new Glow(this.gameObject.GetComponent<Light>());
+            this.GlowEffect = new GlowEffect(this.gameObject.GetComponent<Light>());
             this.FadeEffect = new FadeEffect(this.gameObject.GetComponent<Light>());
             this.IntensifyEffect = new IntensifyEffect(this.gameObject.GetComponent<Light>());
         }
@@ -68,6 +69,16 @@ namespace WizardAdventure.Effects
     #endregion
 
     #region [Public Methods]
+
+        public void InstantIntesify(float targetIntensity, float targetRange)
+        {
+            this.IntensifyEffect.InstantIntesify(targetIntensity, targetRange);
+        }
+
+        public void AddIntensityInstantly(float targetIntensity, float targetRange)
+        {
+            this.IntensifyEffect.AddIntesityInstantly(targetIntensity, targetRange);
+        }
 
         /// <summary>
         /// Begins to change color to target color.
@@ -320,7 +331,31 @@ namespace WizardAdventure.Effects
             float randomNoice = UnityEngine.Random.Range(0.8f, 1.2f);
             this. StartCoroutine(this.GlowEffect.RandomGlowCoroutine(minGlowIntensity, interval, time, randomNoice));
         }
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="targetIntensity"></param>
+        /// <param name="fadeSpeed"></param>
+        /// <param name="timeIntervals"></param>
+        /// <returns></returns>
+        public Task FadeAsync(float targetIntensity, float fadeSpeed, int timeIntervals)
+        {
+            return this.FadeEffect.FadeAsync(targetIntensity, fadeSpeed, timeIntervals);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="targetIntensity"></param>
+        /// <param name="intensifySpeed"></param>
+        /// <param name="timeIntervals"></param>
+        /// <returns></returns>
+        public Task IntesifyAsync(float targetIntensity, float intensifySpeed, int timeIntervals)
+        {
+            return this.IntensifyEffect.IntesifyAsync(targetIntensity, intensifySpeed, timeIntervals);
+        }
+
     #endregion
 
     }

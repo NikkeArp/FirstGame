@@ -35,6 +35,7 @@ public class CameraController : MonoBehaviour
     }
 
 #endregion
+
 #region [Protected Methods]
 
     protected IEnumerator StartZoom()

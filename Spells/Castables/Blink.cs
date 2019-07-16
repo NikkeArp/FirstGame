@@ -10,9 +10,9 @@ namespace WizardAdventure.Spells
     #region [Properties]
         new public static float BaseCooldown { get; private set; }
         private Light floorLigth = null;
-        private GlowEffect glowEffect = null;
+        public LightEffects FloorLightEffect { get; private set; }
+        public LightEffects CenterLightEffect { get;  private set; }
         private Light centerLigth = null;
-        private GlowEffect centerGlowEffect = null;
     #endregion
 
     #region [Public Methods]
@@ -60,9 +60,9 @@ namespace WizardAdventure.Spells
         protected override void InitializeSpell()
         {
             this.floorLigth = this.transform.Find("FloorLight").GetComponent<Light>();
-            this.glowEffect = this.transform.Find("FloorLight").GetComponent<GlowEffect>();
             this.centerLigth = this.transform.Find("CenterLight").GetComponent<Light>();
-            this.centerGlowEffect = this.transform.Find("CenterLight").GetComponent<GlowEffect>();
+            this.FloorLightEffect = this.transform.Find("FloorLight").GetComponent<LightEffects>();
+            this.CenterLightEffect = this.transform.Find("CenterLight").GetComponent<LightEffects>();
 
             this.castRange = 5.0f;
             this.IsAgressive = false;
@@ -169,16 +169,10 @@ namespace WizardAdventure.Spells
         /// <returns></returns>
         private async void LigthEffectsAsync(float originalIntensity)
         {
-            /* this.centerGlowEffect.Intesify(8.0f, 6.0f, 0.5f);
-            this.glowEffect.StartFade(0.0f, 0.0f, 0.5f);
-            this.glowEffect.Intesify(originalIntensity, 8.0f, 0.8f);
-            this.centerGlowEffect.StartFade(0.0f, 0.0f, 1.0f);
-            Destroy(this.gameObject);
-            this.Caster.IsFrozen = false; */
-            await this.centerGlowEffect.IntesifyAsync(8f, 0.5f, 1);
-            await this.glowEffect.FadeAsync(0.0f, 0.8f, 20);
-            await this.glowEffect.IntesifyAsync(originalIntensity, 0.8f, 20);
-            await this.centerGlowEffect.FadeAsync(0.0f, 1f, 1);
+            await this.CenterLightEffect.IntensifyEffect.IntesifyAsync(8f, 0.5f, 1);
+            await this.FloorLightEffect.FadeEffect.FadeAsync(0.0f, 0.8f, 20);
+            await this.FloorLightEffect.IntensifyEffect.IntesifyAsync(originalIntensity, 0.8f, 20);
+            await this.CenterLightEffect.FadeEffect.FadeAsync(0.0f, 1f, 1);
             Destroy(this.gameObject);
             this.Caster.IsFrozen = false;
         }

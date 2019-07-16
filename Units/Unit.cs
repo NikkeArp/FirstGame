@@ -14,7 +14,8 @@ public abstract class Unit : MonoBehaviour, IMoveable
     public float MoveSpeed { get; set; }
 
     public List<DebuffName> ActiveDebuffs { get; protected set; }
-    public GlowEffect DebuffEffect;
+    //public GlowEffect DebuffEffect;
+    public LightEffects DebuffEffect { get; private set; }
 
     protected float jumpPowerUp;
     protected float JumpPowerSide;
@@ -385,7 +386,7 @@ public abstract class Unit : MonoBehaviour, IMoveable
     /// </summary>
     protected virtual void InitializeUnit()
     {
-        this.DebuffEffect = this.transform.Find("DebuffEffect")?.GetComponent<GlowEffect>();
+        this.DebuffEffect = this.transform.Find("DebuffEffect")?.GetComponent<LightEffects>();
         this.ActiveDebuffs = new List<DebuffName>();
         this.Rigidbody = this.GetComponent<Rigidbody2D>();
         this.UnitAnimator = this.GetComponent<Animator>();

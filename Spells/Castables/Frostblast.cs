@@ -12,7 +12,7 @@ namespace WizardAdventure.Spells
         new public static float BaseCooldown { get; private set; }
         private const float SLOW_EFFECT = 0.4f;
         private const float SLOW_DURATION = 2.0f;
-        private GlowEffect glowEffect = null;
+        public LightEffects LightEffects { get; private set; }
     #endregion
 
     #region [Unity API]
@@ -49,8 +49,8 @@ namespace WizardAdventure.Spells
             {
                 SpellEventManager.Instance.SetDebuff(DebuffName.Chilled, collidedUnit);
             }
-            this.glowEffect.Intesify(5.0f, 2.0f);
-            this.glowEffect.StartFade(0, 0, 0.2f, 0.01f);
+            this.LightEffects.AddIntensityInstantly(5.0f, 2.0f);
+            this.LightEffects.BeginFade(0.0f, 0.0f, 0.2f, 0.2f, 0.01f);
             Destroy(this.gameObject, 0.4f);
         }
  
@@ -107,17 +107,17 @@ namespace WizardAdventure.Spells
             var tailTwo = this.transform.Find("TailLightTwo");
 
             // Starts main light's glow effect
-            this.glowEffect.Glow(1.0f, 0.2f);
+            this.LightEffects.BeginGlow(1.0f, 0.2f);
 
             // After random timespan, enables tail lights and starts their glow effect
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.2f, 0.5f));
 
             tailOne.GetComponent<Light>().enabled = true;
-            tailOne.GetComponent<GlowEffect>().Glow(0.2f, 0.2f);
+            tailOne.GetComponent<LightEffects>().BeginGlow(0.2f, 0.2f);
             
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.2f, 0.5f));
             tailTwo.GetComponent<Light>().enabled = true;
-            tailTwo.GetComponent<GlowEffect>().Glow(0.2f, 0.2f);
+            tailTwo.GetComponent<LightEffects>().BeginGlow(0.2f, 0.2f);
         }
 
     #endregion
@@ -134,7 +134,7 @@ namespace WizardAdventure.Spells
             this.StartSpeed = 2f;
             this.SpawnOffset = new Tuple<float, float>(1.0f, 0.5f);
             this.MaxSpeed = 15f;
-            this.glowEffect = GetComponentInChildren<GlowEffect>();
+            this.LightEffects = GetComponentInChildren<LightEffects>();
             this.damage = 2;
             this.Cooldown = BaseCooldown =  2.0f;
             this.castRange = 50f;

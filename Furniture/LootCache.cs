@@ -14,7 +14,7 @@ namespace WizardAdventure.Props
     {
 
     #region [Properties]
-        public GlowEffect LootGlowEffect { get; private set; }
+        public LightEffects LootLightEffect { get; private set; }
         public Collider2D LootCollider { get; private set; }
         public SpriteRenderer Renderer { get; private set; }
         public ParticleSystem LootEffect { get; private set; }
@@ -50,7 +50,7 @@ namespace WizardAdventure.Props
         /// </summary>
         protected virtual void Start()
         {
-            this.LootGlowEffect.Glow(4.0f, 0.3f, 0.08f);
+            this.LootLightEffect.BeginGlow(4.0f, 0.3f, 0.08f);
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace WizardAdventure.Props
         protected virtual void InitializeLootContainer()
         {
             this.LootEffect = this.transform.Find("TreasureEffect").GetComponent<ParticleSystem>();
-            this.LootGlowEffect = this.GetComponentInChildren<GlowEffect>();
+            this.LootLightEffect = this.GetComponentInChildren<LightEffects>();
             this.LootCollider = this.GetComponent<Collider2D>();
             this.Renderer = this.GetComponent<SpriteRenderer>();
         }
