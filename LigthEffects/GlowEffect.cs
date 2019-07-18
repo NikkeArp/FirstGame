@@ -3,8 +3,13 @@ using System.Collections;
 
 namespace WizardAdventure.Effects
 {
+    /// <summary>
+    /// Class to control light component's glowing
+    /// effects.
+    /// </summary>
     public class GlowEffect
     {
+
     #region [Properties]
         /// <summary>
         /// Get and set Light component

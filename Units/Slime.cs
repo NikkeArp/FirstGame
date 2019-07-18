@@ -30,7 +30,7 @@ public class Slime : Enemy, ILightUp
     {
         // Collision with other slimes makes them fuse together.
         // Also Blends their colors to one.
-        if (other.collider.CompareTag("EnemySlime"))
+        if (Tags.TagsContainTag(other.gameObject.tag, "Slime"))
         {
             var otherSlime = other.gameObject.GetComponent<Slime>();
             if(GameController.Instance.AddSlimePair(new SlimeMergePair(this, otherSlime)))

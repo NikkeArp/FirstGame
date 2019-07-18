@@ -2,6 +2,9 @@
 
 namespace WizardAdventure.Props
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TreasureChest : LootContainer
     {
         #region [Properties]
@@ -9,16 +12,12 @@ namespace WizardAdventure.Props
 
         #region [Unity API]
 
-        // Start is called before the first frame update
+        /// <summary>
+        /// 
+        /// </summary>
         protected override void Start()
         {
             base.Start();
-        }
-
-        // Update is called once per frame
-        protected override void Update()
-        {
-            base.Update();
         }
 
         #endregion

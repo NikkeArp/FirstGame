@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using System.Threading.Tasks;
 
 namespace WizardAdventure.Effects

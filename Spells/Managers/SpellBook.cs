@@ -51,7 +51,7 @@ namespace WizardAdventure.Spells
                 if (Input.GetKeyDown(KeyCode.Q))
                 {
                     this.Caster.SetCastAnimation();
-                    if(this.CastSpell<Blink>(Caster.FaceRigth))
+                    if (this.CastSpell<Blink>(Caster.FaceRigth))
                     {
                         SpellEventManager.Instance.SetGlobalCooldown();
                     }
@@ -60,7 +60,7 @@ namespace WizardAdventure.Spells
                 if (Input.GetKeyDown(KeyCode.R))
                 {
                     this.Caster.SetCastAnimation();
-                    if(this.CastSpell<Frostblast>(Caster.FaceRigth))
+                    if (this.CastSpell<Frostblast>(Caster.FaceRigth))
                     {
                         SpellEventManager.Instance.SetGlobalCooldown();
                     }

@@ -1,4 +1,3 @@
-using UnityEngine;
 
 namespace WizardAdventure.Spells
 {
@@ -21,8 +20,8 @@ namespace WizardAdventure.Spells
         /// <summary>
         /// Cast the spell.
         /// </summary>
-        /// <param name="caster"></param>
-        /// <param name="faceRight"></param>
+        /// <param name="caster">Unit that casterd the spell</param>
+        /// <param name="faceRight">Direction caster is facing</param>
         public virtual void Cast(Unit caster, bool faceRight)
         {}
     }

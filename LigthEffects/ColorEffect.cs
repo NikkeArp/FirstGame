@@ -4,6 +4,10 @@ using System;
 
 namespace WizardAdventure.Effects
 {
+    /// <summary>
+    /// Class for controlling light component's
+    /// color changes.
+    /// </summary>
     internal class ColorEffect
     {
 

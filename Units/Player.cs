@@ -6,14 +6,53 @@ using WizardAdventure.Spells;
 /// <summary>
 /// This class contains player functinality for Player-GameObject.
 /// </summary>
-public class Player : Unit
+public sealed class Player : Unit
 {
 #region [Properties]
-    public SpellBook spellBook;
-    private bool jumpDownTime = false;
-    [HideInInspector] public float y_PositionBeforeJump;
-    [HideInInspector] public bool backAtJumpStartPosition;
-    private const int JUMP_DOWNTIME = 100;
+
+    /// <summary>
+    /// Player's spellbook object, that handles
+    /// casting spells.
+    /// </summary>
+    /// <value>Get and Set player's spellbook</value>
+    public SpellBook SpellBook { get; private set; }
+
+    /// <summary>
+    /// Jump Downtime for player gameobject.
+    /// This flag makes sure player can't spam
+    /// jump.
+    /// </summary>
+    /// <value>Get and Set Player's jump downtime</value>
+    public bool JumpDownTime { get; private set; }
+
+    /// <summary>
+    /// Player's y-position before jumping. This is used to
+    /// calculate when player is back at the same level after jumping.
+    /// </summary>
+    /// <value>Get and Set player's y-position before the jump.</value>
+    public float Y_PositionBeforeJump { get; private set; }
+
+    /// <summary>
+    /// Flag for indicating that player is back
+    /// at jump position in y-axis.
+    /// </summary>
+    /// <value>
+    /// Get and Set player's flag for being back at jump start level
+    /// </value>
+    public bool BackAtJumpStartPosition { get; private set; }
+
+    /// <summary>
+    /// Player's jump downtime in milliseconds.
+    /// </summary>
+    /// <value>Get and set player's jump downtime in milliseconds</value>
+    public int JumpDownTimeMS { get; private set; }
+
+    /// <summary>
+    /// Players inventory. Inventory holds all the
+    /// loot player gathers.
+    /// </summary>
+    /// <value>Get and Set player's inventory.</value>
+    public PlayerInventory Inventory { get; private set; }
 
 #endregion
 #region [UnityAPI]
@@ -27,14 +66,13 @@ public class Player : Unit
     /// <returns></returns>
     private async void OnCollisionEnter2D(Collision2D other) 
     {
-        if(other.collider.CompareTag("Ground"))
+        if (Tags.TagsContainOneTag(other.gameObject.tag, "Ground", "Enemy"))
         {
             this.MoveState = MovementState.LANDED;
-            await Task.Delay(TimeSpan.FromMilliseconds(JUMP_DOWNTIME));
-            this.jumpDownTime = false;
+            await Task.Delay(TimeSpan.FromMilliseconds(JumpDownTimeMS));
+            this.JumpDownTime = false;
         }
     }
-
 
     /// <summary>
     /// 
@@ -43,10 +81,9 @@ public class Player : Unit
     {
         if (Input.anyKeyDown)
         {
-            this.spellBook.AttemptCast();
+            this.SpellBook.AttemptCast();
         }
     }
-
 
     /// <summary>
     /// Physics movements. Updates every frame.
@@ -54,8 +91,8 @@ public class Player : Unit
     protected override void FixedUpdate()
     {
         // Checks if player is back at y-Position after jumping.
-        if (this.transform.position.y <= this.y_PositionBeforeJump)
-            this.backAtJumpStartPosition = true;
+        if (this.transform.position.y <= this.Y_PositionBeforeJump)
+            this.BackAtJumpStartPosition = true;
 
         float horizontal;
         if (PlayerMoved(out horizontal))
@@ -78,7 +115,7 @@ public class Player : Unit
     /// </summary>
     private void MovePLayer(float horizontal)
     {     
-        if (Input.GetKey(KeyCode.W) && !jumpDownTime && this.MoveState != MovementState.AIR) 
+        if (Input.GetKey(KeyCode.W) && !JumpDownTime && this.MoveState != MovementState.AIR) 
         {   // Player is pressing up, jump is not on cooldown and character state is not AIR
             float jumpPowerSide = horizontal == 0.0f ? 0.0f : (horizontal < 0.0f) ? -this.jumpPowerUp : this.JumpPowerSide;
             this.Jump(jumpPowerSide);
@@ -88,7 +125,6 @@ public class Player : Unit
             this.Move(horizontal);
         }
     } 
-
 
     /// <summary>
     /// Checks if player can move.
@@ -109,7 +145,6 @@ public class Player : Unit
         return true;
     }
 
-
 #endregion
 #region [Public Methods]
 
@@ -128,10 +163,10 @@ public class Player : Unit
     /// <param name="x_AxisMovement">Movement in x axis</param>
     public override void Jump(float x_AxisMovement)
     {
-        this.y_PositionBeforeJump = this.transform.position.y;
-        this.backAtJumpStartPosition = false;
+        this.Y_PositionBeforeJump = this.transform.position.y;
+        this.BackAtJumpStartPosition = false;
         base.Jump(x_AxisMovement);
-        this.jumpDownTime = true;
+        this.JumpDownTime = true;
         this.MoveState = MovementState.AIR;
     }
 
@@ -144,13 +179,15 @@ public class Player : Unit
     /// </summary>
     protected override void InitializeUnit()
     {
-        this.spellBook = this.GetComponentInChildren<SpellBook>();
-        this.spellBook.Caster = this;
+        this.Inventory = new PlayerInventory();
+
+        this.SpellBook = this.GetComponentInChildren<SpellBook>();
+        this.SpellBook.Caster = this;
 
         this.IsFrozen = false;
 
-        this.y_PositionBeforeJump = this.transform.position.y;
-        this.backAtJumpStartPosition = true;
+        this.Y_PositionBeforeJump = this.transform.position.y;
+        this.BackAtJumpStartPosition = true;
         
         this.MoveSpeed = 3.2f;
         this.jumpPowerUp = 10.0f;

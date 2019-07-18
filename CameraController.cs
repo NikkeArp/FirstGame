@@ -118,13 +118,13 @@ public class CameraController : MonoBehaviour
     /// </summary>
     protected virtual void MovePlayCamera(float speed)
     {
-        if (player.backAtJumpStartPosition)
+        if (player.BackAtJumpStartPosition)
         {
             MoveCamera(player.transform.position, speed);
         }
         else
         {
-            MoveCamera(player.transform.position, speed, player.y_PositionBeforeJump);
+            MoveCamera(player.transform.position, speed, player.Y_PositionBeforeJump);
         }
     }
 

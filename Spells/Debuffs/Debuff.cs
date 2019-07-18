@@ -38,7 +38,7 @@ namespace WizardAdventure.Spells
         }
 
         /// <summary>
-        /// Called in Awake() mewthod.
+        /// Called in Awake() method.
         /// </summary>
         protected abstract void InitializeDebuff();
 
