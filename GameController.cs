@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using System.Threading.Tasks;
 using System;
 using WizardAdventure.Structures;
+using WizardAdventure.Items;
 
 public class GameController : MonoBehaviour
 {
 #region [Properties]
-
     public static GameController Instance { get; private set; } = null;
     public readonly int PlayerShootDownTime = 100;
     public bool PlayerCanShoot { get; private set; } = true;
     private List<SlimeMergePair> slimeMergeEventPairs;
-
 #endregion
 
     void Awake()
@@ -23,7 +21,6 @@ public class GameController : MonoBehaviour
         else if (Instance != this) 
             Destroy(gameObject);
     }
-
 
     public bool AddSlimePair(SlimeMergePair pair)
     {
@@ -39,13 +36,5 @@ public class GameController : MonoBehaviour
         }
         this.slimeMergeEventPairs.Add(pair);
         return false;
-    }
-
-
-    public async void PlayerShoot() 
-    {
-        PlayerCanShoot = false;
-        await Task.Delay(TimeSpan.FromMilliseconds(300));
-        PlayerCanShoot = true;
     }
 }

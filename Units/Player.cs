@@ -11,6 +11,13 @@ public sealed class Player : Unit
 #region [Properties]
 
     /// <summary>
+    /// Player's inventory object, that holds all the items
+    /// player gathers from the gameworld.
+    /// </summary>
+    /// <value>Get and Set PLayer's inventory</value>
+    public PlayerInventory Inventory { get; private set; }
+
+    /// <summary>
     /// Player's spellbook object, that handles
     /// casting spells.
     /// </summary>
@@ -47,12 +54,12 @@ public sealed class Player : Unit
     /// <value>Get and set player's jump downtime in milliseconds</value>
     public int JumpDownTimeMS { get; private set; }
 
-    /// <summary>
+    /* /// <summary>
     /// Players inventory. Inventory holds all the
     /// loot player gathers.
     /// </summary>
     /// <value>Get and Set player's inventory.</value>
-    public PlayerInventory Inventory { get; private set; }
+    public PlayerInventory Inventory { get; private set; } */
 
 #endregion
 #region [UnityAPI]
@@ -81,6 +88,10 @@ public sealed class Player : Unit
     {
         if (Input.anyKeyDown)
         {
+            // Toggle inventory on and off
+            this.ToggleInventory();
+
+            // Cast a spell
             this.SpellBook.AttemptCast();
         }
     }
@@ -107,8 +118,31 @@ public sealed class Player : Unit
         this.UpdateAnimation();
     }
 
+
 #endregion
 #region [Private Methods]
+
+    /// <summary>
+    /// Toggles inventory if I-key is pressed down.
+    /// </summary>
+    private void ToggleInventory()
+    {
+        // Inventory hotkey pressed.
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            if (InventoryController.Instance.InventoryMoving)
+            {
+                return;
+            }
+
+            // Change inventory's active state.
+            this.Inventory.ToggleInventory();
+
+            // Set inventory active or inactive based on
+            // inventory's active state.
+            this.Inventory.Activate(this.Inventory.InventoryActive);
+        }
+    }
 
     /// <summary>
     /// Moves player either in x-axis or jumps.
@@ -179,7 +213,7 @@ public sealed class Player : Unit
     /// </summary>
     protected override void InitializeUnit()
     {
-        this.Inventory = new PlayerInventory();
+        this.Inventory = this.GetComponent<PlayerInventory>();
 
         this.SpellBook = this.GetComponentInChildren<SpellBook>();
         this.SpellBook.Caster = this;

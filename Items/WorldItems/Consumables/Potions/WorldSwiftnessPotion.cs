@@ -1,17 +1,14 @@
-using UnityEngine;
-using System;
-using System.Collections;
 using WizardAdventure.Effects;
 
 namespace WizardAdventure.Items
 {
-    public class WorldHealingPotion : WorldHealingItem
+    public class WorldSwiftnessPotion : WorldBuffItem
     {
     #region [Properties]
         /// <summary>
-        /// 
+        /// Light effect script
         /// </summary>
-        /// <value></value>
+        /// <value>Get and Set light effect controller.</value>
         public LightEffects LightEffect { get; private set; }
     #endregion
 
@@ -24,19 +21,17 @@ namespace WizardAdventure.Items
 
     #endregion
 
+
+
     #region [Protected Methods]
+
         protected override void InitializeItem()
         {
             base.InitializeItem();
-            this.Cooldown = 5;
-            this.Description = "asd";
-            this.HealthIncrease = 15;
-            this.Id = 666;
+            this.Id = "ca48495a75b9468fa770bdc39a42dfe7";
             this.LightEffect = this.GetComponentInChildren<LightEffects>();
-            this.Lore = "Cool shit";
-            this.Name = "Greater healing potion";
         }
-    #endregion
 
+    #endregion
     }
 }

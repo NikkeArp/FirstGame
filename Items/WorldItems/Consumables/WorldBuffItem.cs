@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace WizardAdventure.Items
 {
     /// <summary>
@@ -7,7 +5,7 @@ namespace WizardAdventure.Items
     /// the game world. NOT LOOT CONTAINERS! These items are like Healing item
     /// base class, but have Rigidbodies and colliders to implement IWorldItem.
     /// </summary>
-    public abstract class WorldHealingItem : WorldItem
+    public abstract class WorldBuffItem : WorldItem
     {
     }
 }

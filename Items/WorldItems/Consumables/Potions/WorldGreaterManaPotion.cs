@@ -3,13 +3,13 @@ using WizardAdventure.Effects;
 
 namespace WizardAdventure.Items
 {
-    public class WorldManaPotion : WorldManaItem
+    public class WorldGreaterManaPotion : WorldManaItem
     {
         #region [Properties]
         /// <summary>
-        /// 
+        /// Light effect script
         /// </summary>
-        /// <value></value>
+        /// <value>Get and Set light effect controller.</value>
         public LightEffects LightEffect { get; private set; }
     #endregion
 
@@ -17,23 +17,19 @@ namespace WizardAdventure.Items
         
         private void Start()
         {
-            this.LightEffect.BeginGlow(1,5f, 0.02f, 0.01f);
+            this.LightEffect.BeginGlow(1.5f, 0.02f, 0.01f);
         }
 
     #endregion
 
 
     #region [Protected Methods]
+
         protected override void InitializeItem()
         {
             base.InitializeItem();
-            this.Cooldown = 5;
-            this.Description = "asd";
-            this.ManaIncrease = 15;
-            this.Id = 666;
+            this.Id = "c5aab76932f645188725a768d948deb6";
             this.LightEffect = this.GetComponentInChildren<LightEffects>();
-            this.Lore = "Cool shit";
-            this.Name = "Greater healing potion";
         }
     #endregion
     }

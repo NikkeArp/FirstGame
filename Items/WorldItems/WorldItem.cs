@@ -6,7 +6,7 @@ namespace WizardAdventure.Items
     /// <summary>
     /// Interface for items that are physically in the gameworld.
     /// </summary>
-    public abstract class WorldItem : Item
+    public abstract class WorldItem : MonoBehaviour
     {
     #region [Properties]
         /// <summary>
@@ -26,9 +26,21 @@ namespace WizardAdventure.Items
         /// </summary>
         /// <value>Get and Set the Unit that gathered this item.</value>
         protected Unit Gatherer { get; set; }
+
+        /// <summary>
+        /// Id of the item located in the gameworld.
+        /// </summary>
+        /// <value>Get and set id to item</value>
+        protected string Id { get; set;}
+
     #endregion
     
     #region [Unity API]
+
+        protected virtual void Awake()
+        {
+            this.InitializeItem();
+        }
 
         /// <summary>
         /// Collision eventhandler for collectable item.
@@ -39,7 +51,7 @@ namespace WizardAdventure.Items
         /// <param name="other">Other gameobject in collision</param>
         protected virtual void OnCollisionEnter2D(Collision2D other)
         {
-            if (other.gameObject.CompareTag("Player"))
+            if (Tags.TagsContainTag(other.gameObject.tag, "Player"))
             {
                 this.Collect(other.gameObject);
             }
@@ -111,6 +123,8 @@ namespace WizardAdventure.Items
                 // return control to unity.
                 yield return null;
             }
+            var inventory = this.Gatherer.GetComponentInChildren<PlayerInventory>();
+            inventory.CreateItem(this.Id);
             Destroy(this.gameObject);
         }
 
@@ -120,8 +134,11 @@ namespace WizardAdventure.Items
         /// </summary>
         protected void Collect(GameObject player)
         {
-            player.GetComponent<Player>()?.Inventory.AddItem(this);
-            Destroy(this.gameObject);
+            this.Gatherer = player.GetComponent<Player>();
+            //player.GetComponent<Player>()?.Inventory.AddItem(this);
+            this.Collider.enabled = false;
+            this.Rigidbody.AddForce(new Vector2(10, 300));
+            this.StartCoroutine(GatherMovement());
         }
 
         /// <summary>
@@ -129,9 +146,8 @@ namespace WizardAdventure.Items
         /// by also setting physics components needed for item located
         /// in the gameworld.
         /// </summary>
-        protected override void InitializeItem()
+        protected virtual void InitializeItem()
         {
-            base.InitializeItem();
             this.Rigidbody = this.GetComponent<Rigidbody2D>();
             this.Collider = this.GetComponent<Collider2D>();
         }

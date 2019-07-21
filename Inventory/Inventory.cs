@@ -8,7 +8,7 @@ using System.Text;
 /// items are stored inside inventory. Inventory has
 /// maximum capasity.
 /// </summary>
-public abstract class Inventory
+public abstract class Inventory : MonoBehaviour
 {
 #region [Properties]
 
@@ -23,8 +23,19 @@ public abstract class Inventory
     /// inventory.
     /// </summary>
     /// <value>Get and Set Inventory's Item list</value>
-    protected List<Item> Items { get; set; }
+    public List<Item> Items { get; protected set; }
 
+    public GameObject GreaterHealingPotionPrefab;
+    public GameObject SwiftnessPotionPrefab;
+    public GameObject GreaterManaPotionPrefab;
+
+#endregion
+
+#region [Unity API]
+    protected virtual void Awake()
+    {
+        this.Initialize();
+    }
 #endregion
 
 #region [Protected Methods]

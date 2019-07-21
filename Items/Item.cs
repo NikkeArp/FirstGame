@@ -30,7 +30,9 @@ namespace WizardAdventure.Items
         /// Item ID.
         /// </summary>
         /// <value>Get and Set item's ID</value>
-        public int Id { get; protected set; }
+        public string Id { get; protected set; }
+
+        public Sprite icon;
         #endregion
 
     #region [Unity API]
@@ -46,7 +48,11 @@ namespace WizardAdventure.Items
     #endregion
 
     #region [Public Methods]
-        
+        public override string ToString()
+        {
+            return this.Name;
+        }
+
     #endregion
 
     #region [Protected Methods]
