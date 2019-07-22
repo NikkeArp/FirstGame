@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace WizardAdventure.Items
 {
@@ -32,15 +34,15 @@ namespace WizardAdventure.Items
         /// <value>Get and Set item's ID</value>
         public string Id { get; protected set; }
 
-        public Sprite icon;
         #endregion
 
     #region [Unity API]
-        
+
+
         /// <summary>
         /// 
         /// </summary>
-        protected void Awake()
+        protected virtual void Awake()
         {
             this.InitializeItem();
         }

@@ -88,7 +88,7 @@ namespace WizardAdventure.Props
         /// </summary>
         protected virtual void Start()
         {
-            this.LootLightEffect.BeginGlow(4.0f, 0.3f, 0.08f);
+            this.LootLightEffect.BeginGlow(6.0f, 0.1f, 0.08f);
         }
 
         /// <summary>

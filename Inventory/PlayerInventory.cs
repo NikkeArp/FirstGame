@@ -21,18 +21,10 @@ public sealed class PlayerInventory : Inventory
     public bool InventoryActive { get; private set; }
 
     /// <summary>
-    /// InventorySlot array containing all the inventory
-    /// slots.
+    /// 
     /// </summary>
-    /// <value>Get and Set inventory slot array</value>
-    public InventorySlot[] Slots { get; private set; }
-
-    /// <summary>
-    /// Slot holder is the panel in inventory that holds
-    /// all the slot as it's children.
-    /// </summary>
-    /// <value>Get and Set SlotHolder</value>
-    public GameObject SlotHolder { get; private set; }
+    /// <value></value>
+    public GameObject[] InventorySlots { get; private set; }
 
     /// <summary>
     /// Dictionary that holds item prefabs.
@@ -42,8 +34,19 @@ public sealed class PlayerInventory : Inventory
     /// <typeparam name="GameObject">Item Prefab</typeparam>
     /// <returns>Get and Set Item dictionary.</returns>
     public Dictionary<string, GameObject> ItemTable { get; set; }
+
+    public GameObject CurrentSlot { get; set; }
+
+    public Vector3 MousePosition { get; set; }
+
 #endregion
 
+private void Update() {
+
+    
+
+    Debug.Log(this.CurrentSlot);
+}
 
 #region [Protected Methods]
 
@@ -56,9 +59,6 @@ public sealed class PlayerInventory : Inventory
         base.Initialize();
         this.MaxItemCount = 20;
 
-        // Slot holder is the panel holding all the slots.
-        this.SlotHolder = this.inventory.transform.GetChild(0).gameObject;
-
         // Set item prefabs to dictionary.
         this.ItemTable = new Dictionary<string, GameObject>();
         this.FillItemTable();
@@ -67,6 +67,8 @@ public sealed class PlayerInventory : Inventory
         this.FillSlotObjects();
         this.InventoryActive = true;
     }
+
+    
 
 #endregion
 
@@ -108,10 +110,10 @@ public sealed class PlayerInventory : Inventory
     /// </summary>
     private void FillSlotObjects()
     {
-        this.Slots = new InventorySlot[this.MaxItemCount];
+        this.InventorySlots = new GameObject[this.MaxItemCount];
         for (int i = 0; i < this.MaxItemCount; i++)
         {
-            this.Slots[i] = new InventorySlot(false, this.SlotHolder.transform.GetChild(i).gameObject);
+            this.InventorySlots[i] = this.inventory.transform.GetChild(i).gameObject;
         }
     }
 
@@ -144,20 +146,16 @@ public sealed class PlayerInventory : Inventory
             // Go through all the slots and find the first unoccupied slot.
             for (int i = 0; i < this.MaxItemCount; i++)
             {
-                var currentSlot = this.Slots[i];
-                if (!currentSlot.IsEmpty)
+                var currentSlot = this.InventorySlots[i].GetComponent<Slot>();
+                if (currentSlot.IsFree)
                 {
                     // Instantiate inventory item and set it as a child of current slot.
                     GameObject inventoryItem = Instantiate(inventoryItemPrefab, Vector3.zero, Quaternion.identity);
-                    inventoryItem.transform.parent = currentSlot.Slot.transform;
-
-                    // Set inventory item's sprite to current slot.
-                    Image slotImage = currentSlot.Slot.transform.GetChild(0).GetComponent<Image>();
-                    slotImage.sprite = inventoryItem.GetComponent<Item>().icon;
-                    slotImage.color = Color.white;
+                    inventoryItem.transform.SetParent(currentSlot.transform.GetChild(0).transform);
+                    inventoryItem.transform.position = inventoryItem.transform.parent.position;
 
                     // Slot is no longer empty
-                    this.Slots[i].IsEmpty = true;
+                    this.InventorySlots[i].GetComponent<Slot>().IsFree = false;
                     return;
                 }
             }
