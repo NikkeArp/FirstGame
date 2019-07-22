@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using WizardAdventure.Items;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// Players inventory class. Inherits abstarct Inventory
@@ -37,16 +38,8 @@ public sealed class PlayerInventory : Inventory
 
     public GameObject CurrentSlot { get; set; }
 
-    public Vector3 MousePosition { get; set; }
-
 #endregion
 
-private void Update() {
-
-    
-
-    Debug.Log(this.CurrentSlot);
-}
 
 #region [Protected Methods]
 
@@ -150,9 +143,8 @@ private void Update() {
                 if (currentSlot.IsFree)
                 {
                     // Instantiate inventory item and set it as a child of current slot.
-                    GameObject inventoryItem = Instantiate(inventoryItemPrefab, Vector3.zero, Quaternion.identity);
-                    inventoryItem.transform.SetParent(currentSlot.transform.GetChild(0).transform);
-                    inventoryItem.transform.position = inventoryItem.transform.parent.position;
+                    GameObject inventoryItem = Instantiate(inventoryItemPrefab, currentSlot.transform.GetChild(0).position, Quaternion.identity);
+                    inventoryItem.transform.SetParent(currentSlot.transform.GetChild(0));
 
                     // Slot is no longer empty
                     this.InventorySlots[i].GetComponent<Slot>().IsFree = false;
